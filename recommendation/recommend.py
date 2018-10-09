@@ -12,7 +12,7 @@ nltk.download('punkt')
 nltk.download('stopwords')
 default_stopwords = stopwords.words('english')
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
+logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
 
 
 class Recommendation:
@@ -25,7 +25,7 @@ class Recommendation:
         :return: processed text
         :rtype: str
         """
-        # self.logger.info('Text pre-processing is in progress...')
+        self.logger.info('Text pre-processing is in progress...')
         # remove html tags
         text = re.sub(r'<.*?>', '', text)
 
