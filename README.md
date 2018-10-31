@@ -11,7 +11,8 @@ pip install -r /path/to/recommendation/requirements.txt
   
 This project aims,  
   
-1) **IMDB Crawler:** You can run the command ````python imdb/main.py````  for crawler. The start year was selected as 1900 in **append** method  in **crawler.py** You can change this year.  
+1) **IMDB Crawler:** You can run the command ````python imdb/main.py````  for crawler. 
+The start year was selected as 1900 in **append** method  in **crawler.py** You can change this year.  
 <br>
 Sample url for request:   
 <i>https://www.imdb.com/search/title?user_rating=1.6,2.0&year=2010&page=1</i>  
@@ -25,15 +26,18 @@ Sample url for request:
     **NOTE:** Run the models.py file only once, and above all, run it.
 
 
-2) **Recommendation:** You can run the command ````python recommendation/main.py````  for recommendation system. You will see the following code in **main.py**:
+2) **Recommendation:** You can run the command ````python recommendation/main.py````  for recommendation system. 
+You will see the following code in **main.py**:
 <br>
 
 	```movie_df = movie_df[movie_df.kind == 1]```
 <br>
 
-	kind = 1 movies, kind = 0 represents the series. If you want to receive both, your computer's memory may not be enough. You can try to use the limit.
+	kind = 1 movies, kind = 0 represents the series. If you want to receive both, your computer's memory 
+	may not be enough. You can try to use the limit.
 
-Finally, check the two tables under the recommendation db after run the ````python imdb/main.py```` and ````python recommendation/main.py````
+Finally, check the two tables under the recommendation db after run the ````python imdb/main.py```` 
+and ````python recommendation/main.py````
 
 
 
