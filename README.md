@@ -19,8 +19,7 @@ The start year was selected as 1900 in **append** method  in **crawler.py** You 
 <i>https://www.imdb.com/search/title?user_rating=1.6,2.0&year=2010&page=1</i>  
 
 	User rating between lower bound and upper bound (1.6-2.0, 2.1-2.5 etc.), because **404 page not found** 
-error returns after 10.000 movies. The processing time depends on the year you specify. It is foreseen to   
-last long.
+error returns after 10.000 movies. The processing time depends on the year you specify. It is foreseen to last long.
 
 	**NOTE:** Run the models.py file only once, and above all, run it.
 
