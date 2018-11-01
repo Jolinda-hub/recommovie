@@ -19,7 +19,7 @@ class Crawler:
     def __init__(self):
         self.logger = logging.getLogger('IMDB - Crawler Class')
 
-    def __get_page(self, year, rating, page=1):
+    def __get_page(self, year, rating, start=1):
         """
         :param int year: year of movies
         :param float rating: first element of rating range -> (1.0, 1.7)
@@ -36,7 +36,8 @@ class Crawler:
 
         # "404 page not found" error returns after 10000 movies
         resp = requests.get(
-            'https://www.imdb.com/search/title?user_rating={r}&year={y}&page={p}'.format(r=rating_str, y=year, p=page))
+            'https://www.imdb.com/search/title?user_rating={r}&year={y}&start={s}'.format(r=rating_str, y=year,
+                                                                                          s=start))
         return resp if resp.status_code == 200 else None
 
     def __get_movie_count(self, year, rating):
@@ -59,7 +60,10 @@ class Crawler:
             if len(span) > 0:
                 spans = re.findall('\d+', str(span[0]))
                 spans = sorted([int(element) for element in spans], reverse=True)
-                return math.ceil(float(spans[0]) / 50), resp
+                if len(spans) > 0:
+                    return math.ceil(float(spans[0]) / 50), resp
+                else:
+                    return 0, resp
             else:
                 return 0, resp
         else:
@@ -174,6 +178,6 @@ class Crawler:
                 if page <= 1:
                     pass
                 else:
-                    for i in range(2, int(page) + 1, 1):
-                        records = self.__parse_html(year, rating, i)
+                    for i in range(1, int(page), 1):
+                        records = self.__parse_html(year, rating, (i * 50) + 1)
                         db.insert(records)
