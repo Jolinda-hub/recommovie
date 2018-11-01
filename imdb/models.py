@@ -8,6 +8,7 @@ Base = declarative_base()
 
 class Movie(Base):
     __tablename__ = 'movies'
+
     id = Column(Integer, primary_key=True)
     name = Column(String(250), nullable=False)
     genre = Column(String(50), nullable=True)
@@ -19,6 +20,7 @@ class Movie(Base):
 
 class Recommendation(Base):
     __tablename__ = 'recommendation'
+
     id = Column(Integer, primary_key=True)
     recommend_id = Column(Integer, nullable=False)
     movie_id = Column(Integer, ForeignKey('movies.id'), nullable=False)
