@@ -28,7 +28,7 @@ You will see the following code in **main.py**:
 
 	```movie_df = movie_df[movie_df.kind == 1]```
 
-	kind = 1 movies, kind = 0 represents the series. If you want to receive both, your computer's memory 
+	kind = 1 movies, kind = 0 represents the series. If you want to receive both, your memory of device 
 may not be enough. You can try to use the limit.
 
 Finally, check the two tables under the recommendation db after run the ````python imdb/main.py```` 
