@@ -15,8 +15,9 @@ This project aims,
 1. **IMDB Crawler:** You can run the command ````python imdb/main.py````  for crawler. 
 The start year was selected as 1900 in **append** method  in **crawler.py** You can change this year.  
 
-	Sample url for request:   
-<i>https://www.imdb.com/search/title?user_rating=1.6,2.0&year=2010&start=1</i>  
+	Sample urls for request:   
+<i>https://www.imdb.com/search/title?user_rating=1.6,2.0&year=2010&start=1</i><br>
+<i>https://www.imdb.com/search/title?user_rating=1.6,2.0&year=2010&start=51</i>   
 
 	User rating between lower bound and upper bound (1.6-2.0, 2.1-2.5 etc.), because **404 page not found** 
 error returns after 10.000 movies. The processing time depends on the year you specify. It is foreseen to last long.
