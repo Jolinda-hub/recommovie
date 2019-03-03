@@ -146,6 +146,19 @@ class Crawler:
         else:
             return None
 
+    def __get_image(self, content):
+        """
+        :param bs4.element.Tag content: contains div elements
+        :return: description of movie
+        :rtype: str
+        """
+        self.logger.info('Fetching image url of movie...')
+
+        if content is not None:
+            return content.find('img', attrs={'class': 'loadlate'})['loadlate']
+        else:
+            return None
+
     def __parse_html(self, year=None, rating=None, page=None, resp=None):
         """
         :param int year: year of movies
@@ -157,14 +170,23 @@ class Crawler:
         soup = BeautifulSoup(resp.text, 'html.parser')
         records = list()
 
-        for content in soup.findAll('div', attrs={'class': 'lister-item-content'}):
+        for content in soup.findAll('div', attrs={'class': 'lister-item mode-advanced'}):
             movie_name = self.__get_movie_name(content)
             genre = self.__get_genre(content)
             rating = self.__get_imdb_rating(content)
             kind, year = self.__get_movie_year(content)
             description = self.__get_movie_description(content)
-            record = Movie(name=movie_name, genre=genre, rating=rating, kind=kind, year=year, description=description)
-            records.append(record)
+            url = self.__get_image(content)
+            args = {
+                'name': movie_name,
+                'genre': genre,
+                'kind': kind,
+                'description': description,
+                'url': url,
+                'rating': rating,
+                'year': year,
+            }
+            records.append(Movie(**args))
         return records
 
     def append(self):

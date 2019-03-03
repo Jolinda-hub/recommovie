@@ -10,20 +10,21 @@ class Movie(Base):
     __tablename__ = 'movies'
 
     id = Column(Integer, primary_key=True)
-    name = Column(String(250), nullable=False)
-    genre = Column(String(50), nullable=True)
+    name = Column(String(250), nullable=False, index=True)
+    genre = Column(String(50), nullable=True, index=True)
+    kind = Column(Boolean, nullable=True, index=True)
+    description = Column(Text, nullable=True, index=True)
+    url = Column(Text, nullable=True, index=True)
     rating = Column(Float, nullable=True)
-    kind = Column(Boolean, nullable=True)
     year = Column(Integer, nullable=True)
-    description = Column(Text, nullable=True)
 
 
 class Recommendation(Base):
     __tablename__ = 'recommendation'
 
     id = Column(Integer, primary_key=True)
-    recommend_id = Column(Integer, nullable=False)
-    movie_id = Column(Integer, ForeignKey('movies.id'), nullable=False)
+    recommend_id = Column(Integer, nullable=False, index=True)
+    movie_id = Column(Integer, ForeignKey('movies.id'), nullable=False, index=True)
 
 
 # Create only once
