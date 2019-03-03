@@ -149,7 +149,7 @@ class Crawler:
     def __get_image(self, content):
         """
         :param bs4.element.Tag content: contains div elements
-        :return: description of movie
+        :return: image url of movie
         :rtype: str
         """
         self.logger.info('Fetching image url of movie...')
