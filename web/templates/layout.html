@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <title>{{ title }}</title>
+    <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
+    <link href="css/shop-homepage.css" rel="stylesheet">
+    <link href="css/typeahead.css" rel="stylesheet">
+    <style>
+        body {
+            height: 100%;
+            width: 100%;
+            background: url(img/bg.jpg) no-repeat;
+            background-size: cover;
+        }
+    </style>
+
+</head>
+
+<body>
+{% block navbar %}{% endblock %}
+{% block content %}{% endblock %}
+<script src="http://code.jquery.com/jquery-1.9.1.js"></script>
+<script src="http://code.jquery.com/ui/1.10.3/jquery-ui.js"></script>
+<script src="vendor/bootstrap/js/bootstrap.bundle.min.js"></script>
+<script src="js/typeahead.min.js"></script>
+<script src="js/bloodhound.min.js"></script>
+{% block script %}{% endblock %}
+</body>

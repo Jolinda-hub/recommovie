@@ -13,33 +13,26 @@ class DbConnection:
     def __init__(self):
         self.logger = logging.getLogger('IMDB - DbConnection Class')
 
-    def __connect(self):
+    def connect(self):
         """
         :return: database session
         :rtype: sqlalchemy.orm.session.Session
         """
         self.logger.info('Connecting to sqlite...')
-        engine = create_engine('sqlite:///{p}/imdb/recommendation.db'.format(p=os.pardir))
-        db = sessionmaker(bind=engine)
-        session = db()
-        return session
+        conn_args = {'check_same_thread': False}
+        engine = create_engine('sqlite:///../recommendation.db', connect_args=conn_args)
+        return sessionmaker(bind=engine)()
 
-    def insert(self, records):
-        """
-        :param list records: records list
-        """
-        session = self.__connect()
-        self.logger.info('Inserting records to data...')
-        session.add_all(records)
-        session.commit()
-
-    def insert_recommends(self, df):
+    def insert(self, df):
         """
         :param dataframe df: dataframe for writing
         """
-        self.logger.info('Connecting to sqlite...')
-        engine = create_engine('sqlite:///{p}/imdb/recommendation.db'.format(p=os.pardir))
-        df.to_sql('recommendation', con=engine, if_exists='append', index=False)
+        session = self.connect()
+        self.logger.info('Inserting records to data...')
+        try:
+            df.to_sql(name='movies', con=session.bind, if_exists='append', chunksize=50000, index=False)
+        finally:
+            session.close()
 
     def get_dataframe(self):
         """
@@ -47,8 +40,40 @@ class DbConnection:
         :rtype: dataframe
         """
         self.logger.info('Fetching movie records...')
-        session = self.__connect()
-        query = session.query(Movie.id, Movie.name, Movie.year, Movie.genre, Movie.description, Movie.kind) \
-            .filter(Movie.description != '').filter(Movie.rating >= 7).filter(Movie.year > 1950) \
-            .order_by(Movie.year.desc())
-        return pd.read_sql(query.statement, session.bind)
+        session = self.connect()
+
+        cols = [
+            Movie.movie_id,
+            Movie.title,
+            Movie.start_year,
+            Movie.genres,
+            Movie.description,
+            Movie.kind,
+        ]
+
+        filters = [
+            Movie.description.isnot(None),
+            Movie.genres.isnot(None),
+        ]
+
+        query = session.query(*cols).filter(*filters).order_by(Movie.start_year.desc())
+
+        try:
+            return pd.read_sql(query.statement, session.bind)
+        finally:
+            session.close()
+
+    def get_movies(self):
+        """
+        :return: last added 6 movies
+        :rtype: list
+        """
+        session = self.connect()
+
+        try:
+            return session.query(Movie) \
+                .filter(Movie.kind == 'movie') \
+                .filter(Movie.image_url.isnot(None)) \
+                .order_by(Movie.movie_id.desc()).limit(6).all()
+        finally:
+            session.close()
