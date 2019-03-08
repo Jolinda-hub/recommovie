@@ -20,7 +20,7 @@ class DbConnection:
         """
         self.logger.info('Connecting to sqlite...')
         conn_args = {'check_same_thread': False}
-        engine = create_engine('sqlite:///../recommendation.db', connect_args=conn_args)
+        engine = create_engine('sqlite:///recommendation.db', connect_args=conn_args)
         return sessionmaker(bind=engine)()
 
     def insert(self, df):
@@ -63,17 +63,30 @@ class DbConnection:
         finally:
             session.close()
 
-    def get_movies(self):
+    def get_movies(self, movie_ids=None):
         """
         :return: last added 6 movies
         :rtype: list
         """
         session = self.connect()
 
+        if movie_ids is not None:
+            filters = [
+                Movie.movie_id.in_(movie_ids),
+            ]
+
+            order_ = Movie.average_rating.desc()
+            limit_ = 12
+        else:
+            filters = [
+                Movie.kind == 'movie',
+                Movie.image_url.isnot(None),
+            ]
+
+            order_ = Movie.movie_id.desc()
+            limit_ = 6
+
         try:
-            return session.query(Movie) \
-                .filter(Movie.kind == 'movie') \
-                .filter(Movie.image_url.isnot(None)) \
-                .order_by(Movie.movie_id.desc()).limit(6).all()
+            return session.query(Movie).filter(*filters).order_by(order_).limit(limit_).all()
         finally:
             session.close()

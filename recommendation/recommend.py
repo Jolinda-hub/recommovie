@@ -107,5 +107,5 @@ class Recommendation:
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
         # return original movie ids
-        movie_indices = [i[0] + 1 for i in sim_scores if (i[1] > 0.5) and (i[0] + 1 != fake_id)][0:10]
-        return [v for k, v in self.map_dict.items() if k in movie_indices]
+        movie_indices = [i[0] + 1 for i in sim_scores if (i[1] > 0.5) and (i[0] + 1 != fake_id)][0:50]
+        return [str(v) for k, v in self.map_dict.items() if k in movie_indices]

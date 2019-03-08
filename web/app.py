@@ -3,13 +3,12 @@ import os
 import sys
 import requests
 
-sys.path.append(os.path.abspath(os.path.join(os.getcwd(), '..')))
+sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
 from imdb.db_connection import DbConnection
 from recommendation.recommend import Recommendation
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = 'super secret key'
-app.config['SESSION_TYPE'] = 'filesystem'
 
 db = DbConnection()
 
@@ -22,9 +21,9 @@ def send_css(path):
     return send_from_directory('static/css', path)
 
 
-@app.route('/vendor/<path:path>')
+@app.route('/js/<path:path>')
 def send_js(path):
-    return send_from_directory('static/vendor', path)
+    return send_from_directory('static/js', path)
 
 
 @app.route('/img/<path:path>')
@@ -78,9 +77,11 @@ def suggest():
     return jsonify(response)
 
 
-@app.route('/recommendations/<movie_id>', methods=['GET'])
-def location(movie_id=None):
-    return str(recommend.recommend(movie_id))
+@app.route('/recommendations/<movie_id>/<name>', methods=['GET'])
+def location(movie_id=None, name=None):
+    movie_ids = recommend.recommend(movie_id)
+    res = db.get_movies(movie_ids=movie_ids)
+    return render_template('recommendations.html', items=res, original=name)
 
 
 if __name__ == '__main__':

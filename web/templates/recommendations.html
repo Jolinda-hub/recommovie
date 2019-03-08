@@ -1,0 +1,40 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-xs-12 col-md-12">
+            <div class="card mt-4 mb-4">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-lg-12">
+                            <h1 class="page-header">Recommended movies for
+                                <small>{{ original }}</small>
+                            </h1>
+                        </div>
+                    </div>
+                    <div class="row">
+                        {% for row in items %}
+                        <div class="col-lg-4 col-md-6 mb-4">
+                            <div class="card h-100">
+                                <a href="#"><img class="card-img-top" src={{ row.image_url }} alt=""></a>
+                                <div class="card-body">
+                                    <h4 class="card-title">
+                                        <a href="#">{{ row.title }}</a>
+                                    </h4>
+                                    <h5>{{ row.year }}</h5>
+                                    <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>
+                                </div>
+                                <div class="card-footer">
+                                    <small class="text-muted">IMDB Rating: {{ row.average_rating }}</small>
+                                </div>
+                            </div>
+                        </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
