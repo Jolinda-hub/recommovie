@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
+from util import Util
 from nltk.corpus import stopwords
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from stemming.porter2 import stem
-import logging
 import nltk
 import re
 import string
@@ -12,17 +12,19 @@ nltk.download('punkt')
 nltk.download('stopwords')
 default_stopwords = stopwords.words('english')
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
+util = Util()
 
 
 class Recommendation:
     def __init__(self, df):
-        self.logger = logging.getLogger('Recommendation - Recommendation Class')
+        self.logger = util.set_logger('recommendation')
         self.map_dict = self.mapping(df)
         self.matrix = self.create_matrix(df)
 
     def __preproccessing(self, text):
         """
+        Preprocess to input data
+
         :param str text: text for preproccessing, description + genre
         :return: processed text
         :rtype: str
@@ -42,7 +44,7 @@ class Recommendation:
         text = text.strip().lower()
 
         # replace punctuation characters with spaces
-        replace_punctuation = string.maketrans(string.punctuation, ' ' * len(string.punctuation))
+        replace_punctuation = str.maketrans(string.punctuation, ' ' * len(string.punctuation))
         text = str(text).translate(replace_punctuation)
 
         # stemming (removing ed, es etc.)
@@ -54,6 +56,13 @@ class Recommendation:
         return ' '.join(map(str, words))
 
     def mapping(self, df):
+        """
+        Mapping between fake id and original id
+
+        :param dataframe df: dataframe for mapping
+        :return: mapping dict
+        :rtype: dict
+        """
         self.logger.info('Mapping between fake id and original id...')
 
         df['fake_id'] = range(1, len(df) + 1)
@@ -65,6 +74,8 @@ class Recommendation:
 
     def create_matrix(self, df):
         """
+        Create matrix with tf-idf vectorizer
+
         :param dataframe df: dataframe for matrix creating
         :return: list of vectors
         :rtype: numpy.array
@@ -92,16 +103,21 @@ class Recommendation:
 
     def recommend(self, movie_id):
         """
+        Get recommended movies
+
         :param int movie_id: movie id for recommending
         :return: recommended movie ids
         :rtype: list
         """
         self.logger.info('Finding recommended films for id={id}...'.format(id=movie_id))
 
-        # get fake id from original movie id
-        fake_id = self.map_dict.keys()[self.map_dict.values().index(str(movie_id))]
+        ks = list(self.map_dict.keys())
+        vls = list(self.map_dict.values())
 
-        # create kernel for cosine similarity
+        # get fake id from original movie id
+        fake_id = ks[vls.index(str(movie_id))]
+
+        # create kernel with cosine similarity
         kernel = linear_kernel(self.matrix[fake_id - 1], self.matrix)
         sim_scores = list(enumerate(kernel[0]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)

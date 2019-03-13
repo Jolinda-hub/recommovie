@@ -1,16 +1,12 @@
-from flask import Flask, request, render_template, redirect, send_from_directory, url_for, jsonify
-import os
-import sys
-import requests
-
-sys.path.append(os.path.join(os.path.dirname(__file__), '..'))
-from imdb.db_connection import DbConnection
+from flask import Flask, request, render_template, send_from_directory, jsonify
+from db.data_opt import DataOperation
 from recommendation.recommend import Recommendation
+import requests
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = 'super secret key'
 
-db = DbConnection()
+db = DataOperation()
 
 movie_df = db.get_dataframe()
 recommend = Recommendation(movie_df)
@@ -78,11 +74,7 @@ def suggest():
 
 
 @app.route('/recommendations/<movie_id>/<name>', methods=['GET'])
-def location(movie_id=None, name=None):
+def recommendations(movie_id=None, name=None):
     movie_ids = recommend.recommend(movie_id)
     res = db.get_movies(movie_ids=movie_ids)
     return render_template('recommendations.html', items=res, original=name)
-
-
-if __name__ == '__main__':
-    app.run(port=5002, debug=True)

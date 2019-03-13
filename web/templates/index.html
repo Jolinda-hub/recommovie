@@ -37,12 +37,14 @@
 
                     <div class="row">
                         {% for row in items %}
+                        {% set image_url = row.image_url %}
+                        {% set movie_url = 'http://www.imdb.com/title/' + row.movie_id %}
                         <div class="col-lg-4 col-md-6 mb-4">
                             <div class="card h-100">
-                                <a href="#"><img class="card-img-top" src={{ row.image_url }} alt=""></a>
+                                <a href="#"><img class="card-img-top" src="{{ image_url }}" alt=""></a>
                                 <div class="card-body">
                                     <h4 class="card-title">
-                                        <a href="#">{{ row.title }}</a>
+                                        <a href="{{ movie_url }}">{{ row.title }}</a>
                                     </h4>
                                     <h5>{{ row.year }}</h5>
                                     <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>

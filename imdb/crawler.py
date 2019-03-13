@@ -1,23 +1,26 @@
 # -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
+from imdb.data import get_data
+from db.data_opt import DataOperation
+from util import Util
+import concurrent.futures
 import json
-import logging
+import pandas as pd
 import requests
-import sys
 
-reload(sys)
-sys.setdefaultencoding('utf-8')
-
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
+util = Util()
+db = DataOperation()
 
 
 class Crawler:
     def __init__(self):
-        self.logger = logging.getLogger('IMDB - Crawler Class')
+        self.logger = util.set_logger('crawler')
         self.base_path = ' http://www.imdb.com/title/'
 
     def __get_page(self, movie_id):
         """
+        Get page source
+
         :param str movie_id: movie id like tt0000001
         :return: http response
         :rtype: str
@@ -25,10 +28,12 @@ class Crawler:
         self.logger.info('Request being set...')
         full_path = self.base_path + movie_id
         resp = requests.get(full_path)
-        return resp if resp.status_code == 200 else None
+        return resp.text if resp.status_code == 200 else None
 
     def __parse(self, content):
         """
+        Get image url and description
+
         :param bs4.BeautifulSoup content: BeautifulSoup from html content
         :return: image and description
         :rtype: tuple
@@ -47,32 +52,26 @@ class Crawler:
 
         return img, description
 
-    def append(self, movie_id, name, year):
+    def append(self, movie_id):
         """
+        Create beautiful soup
+
         :param str movie_id: movie id like tt0000001
-        :param str name: movie name
-        :param int year: movie year
         :return: image and description
         :rtype: tuple
         """
         resp = self.__get_page(movie_id)
-        soup = BeautifulSoup(resp.text, 'html.parser')
+        soup = BeautifulSoup(resp, 'html.parser')
 
         img, description = self.__parse(soup)
-
-        # elastic_data = {'name': name, 'year': year}
-        # resp = requests.post('http://localhost:9200/movies/movies/' + str(movie_id), json=elastic_data)
-        #
-        # if resp.status_code not in [200, 201]:
-        #     self.logger.error('Error in request: ' + resp.text)
-        # else:
-        #     self.logger.info('Request sent successfully!')
 
         return img, description
 
     def edit(self, df):
         """
-        :param dataframe df: dataframe for renaming columns and decode with utf8
+        Map columns for db insert
+
+        :param dataframe df: dataframe for renaming columns
         :return: renamed-decoded dataframe
         :rtype: dataframe
         """
@@ -92,12 +91,41 @@ class Crawler:
         }
 
         replaced = df.replace('\\N', '')
-
-        for col in ['description', 'titleType', 'primaryTitle', 'originalTitle']:
-            try:
-                replaced[col] = replaced[col].apply(lambda x: x.decode('utf-8') if x is not None else None)
-            except Exception as e:
-                self.logger.error(e.args)
-
         renamed = replaced.rename(columns=column_maps)
         return renamed
+
+    def crawl(self):
+        """
+        Crawl movies description and image url
+
+        :return: error count from movies crawler
+        :rtype: int
+        """
+        df = get_data()
+
+        records = []
+        future_to_id = {}
+        errors = 0
+
+        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
+            for movie_id in df['tconst'].unique():
+                submission = executor.submit(self.append, movie_id)
+                future_to_id[submission] = movie_id
+
+            for future in concurrent.futures.as_completed(future_to_id):
+                movie_id = future_to_id[future]
+                try:
+                    data = future.result()
+                except Exception as exc:
+                    self.logger.error('%r generated an exception: %s' % (movie_id, exc))
+                    errors += 1
+                else:
+                    records.append(data + (movie_id,))
+
+        df_img = pd.DataFrame(records, columns=['image_url', 'description', 'tconst'])
+        df_all = df_img.merge(df, on='tconst')
+
+        df_last = self.edit(df_all)
+        db.insert(df_last)
+
+        return errors
