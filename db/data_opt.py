@@ -91,7 +91,7 @@ class DataOperation:
                 Movie.movie_id.in_(movie_ids),
             ]
 
-            order_ = Movie.average_rating.desc()
+            order_ = None
             limit_ = 12
         else:
             filters = [

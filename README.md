@@ -6,7 +6,6 @@
 
 
 ## Installation and Usage
----
 For all of options, clone the repository,
 
 ```bash
@@ -83,9 +82,11 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 * requests
 * Beautifulsoup
 * json
+* multi-threading
 
 #### Data Storage:
 * sqlite
+* elasticsearch
 
 #### Modeling/Machine Learning
 * NLP

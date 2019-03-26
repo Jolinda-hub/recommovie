@@ -109,7 +109,7 @@ class Recommendation:
         :return: recommended movie ids
         :rtype: list
         """
-        self.logger.info('Finding recommended films for id={id}...'.format(id=movie_id))
+        self.logger.info(f'Finding recommended films for id={movie_id}...')
 
         ks = list(self.map_dict.keys())
         vls = list(self.map_dict.values())
