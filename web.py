@@ -12,13 +12,13 @@ def main():
     logger = util.set_logger('main')
 
     # create index in elastic search
-    resp = elastic.create_index()
+    msg = elastic.create_index()
 
     # check that it was created
-    if resp:
+    if msg is None:
         logger.info('Index created successfully!')
     else:
-        logger.error('Error occurred in creating index!')
+        logger.error(f'Error occurred in creating index:\n {msg}')
 
     # insert records to elasticsearch
     diff = elastic.insert_elastic()

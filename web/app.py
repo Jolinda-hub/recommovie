@@ -1,12 +1,14 @@
 from flask import Flask, request, render_template, send_from_directory, jsonify
 from db.data_opt import DataOperation
 from recommendation.recommend import Recommendation
+from util import Util
 import requests
 
 app = Flask(__name__, static_url_path='')
 app.secret_key = 'super secret key'
 
 db = DataOperation()
+util = Util()
 
 movie_df = db.get_dataframe()
 recommend = Recommendation(movie_df)
@@ -39,6 +41,7 @@ def suggest():
 
     response = {'status': False}
 
+    # set query for elasticsearch
     query = {
         'suggest': {
             'movie': {
@@ -50,16 +53,25 @@ def suggest():
         }
     }
 
-    res = requests.post('http://elastic:9200/movies/movies/_search', json=query)
+    # get elastic host and port
+    config = util.get_params()
+    host = config['elastic']['host']
+    port = config['elastic']['port']
+
+    # request to elasticsearch
+    res = requests.post(f"http://{host}:{port}/movies/movies/_search", json=query)
     if res.status_code != 200:
         return jsonify(response)
 
+    # get similar options
     data = res.json()
     options = data['suggest']['movie'][0]['options']
 
+    # timeout control
     if data['timed_out'] or len(options) == 0:
         return jsonify(response)
 
+    # similar movie names and movies year
     movies = []
     for item in options:
         source = item['_source']

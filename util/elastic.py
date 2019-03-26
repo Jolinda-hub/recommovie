@@ -65,15 +65,12 @@ class Elastic:
                 }
             }
         }
-        status = False
+        message = None
 
         try:
             es.indices.create(index='movies', body=request_body)
-            status = True
         except exceptions.RequestError as e:
-            if e.args[1] == 'resource_already_exists_exception':
-                status = True
-            else:
-                status = False
+            if not e.args[1] == 'resource_already_exists_exception':
+                message = e.args
         finally:
-            return status
+            return message

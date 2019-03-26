@@ -1,16 +1,15 @@
 version: '2'
 
-
 services:
   app:
     container_name: app
     build: .
     ports:
       - '5002:5002'
-    links:
-      - elasticsearch
     depends_on:
       - elasticsearch
+    networks:
+      - mynetwork
 
   elasticsearch:
     image: 'bitnami/elasticsearch:6'
@@ -18,3 +17,9 @@ services:
     ports:
       - '9200:9200'
       - '9300:9300'
+    networks:
+      - mynetwork
+
+networks:
+  mynetwork:
+    driver: bridge
