@@ -24,8 +24,8 @@ class Elastic:
 
         for item in items:
             action = {
-                '_index': 'movies',
-                '_type': 'movies',
+                '_index': f"{config['elastic']['index']}",
+                '_type': f"{config['elastic']['type']}",
                 '_id': item[0],
                 '_source': {
                     'name': item[1],
@@ -68,7 +68,7 @@ class Elastic:
         message = None
 
         try:
-            es.indices.create(index='movies', body=request_body)
+            es.indices.create(index=config['elastic']['index'], body=request_body)
         except exceptions.RequestError as e:
             if not e.args[1] == 'resource_already_exists_exception':
                 message = e.args

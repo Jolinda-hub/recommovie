@@ -11,6 +11,6 @@ def get_data():
 
     df_merged = df_title.merge(df_ratings, on='tconst')
     df_merged = df_merged[df_merged.titleType.notnull()]
-    df_merged = df_merged[~df_merged.titleType.isin(['video', 'videoGame'])]
+    df_merged = df_merged[~df_merged.titleType.isin(['video', 'videoGame', 'tvEpisode'])]
 
     return df_merged

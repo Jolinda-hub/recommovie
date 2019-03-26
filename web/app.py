@@ -4,11 +4,12 @@ from recommendation.recommend import Recommendation
 from util import Util
 import requests
 
-app = Flask(__name__, static_url_path='')
-app.secret_key = 'super secret key'
-
 db = DataOperation()
 util = Util()
+config = util.get_params()
+
+app = Flask(__name__)
+app.secret_key = config['app']['secret']
 
 movie_df = db.get_dataframe()
 recommend = Recommendation(movie_df)
@@ -53,13 +54,14 @@ def suggest():
         }
     }
 
-    # get elastic host and port
-    config = util.get_params()
+    # get elastic host, port, index and type
     host = config['elastic']['host']
     port = config['elastic']['port']
+    index_ = config['elastic']['index']
+    type_ = config['elastic']['type']
 
     # request to elasticsearch
-    res = requests.post(f"http://{host}:{port}/movies/movies/_search", json=query)
+    res = requests.post(f"http://{host}:{port}/{index_}/{type_}/_search", json=query)
     if res.status_code != 200:
         return jsonify(response)
 
