@@ -30,7 +30,7 @@ def main():
         logger.error(f'Elasticsearch: Error occurred in {diff} movies!')
 
     # run web app
-    app.run(port=5002, debug=config['app'].getboolean('debug'))
+    app.run(host='0.0.0.0', port=5002, debug=config['app'].getboolean('debug'))
 
 
 if __name__ == '__main__':

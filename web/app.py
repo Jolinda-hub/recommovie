@@ -50,7 +50,7 @@ def suggest():
         }
     }
 
-    res = requests.post('http://localhost:9200/movies/movies/_search', json=query)
+    res = requests.post('http://elastic:9200/movies/movies/_search', json=query)
     if res.status_code != 200:
         return jsonify(response)
 
