@@ -69,38 +69,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 
 **PS:** Change the host of elasticsearch, from *elastic* to *localhost*
 
-## Tools and Packages
 
-#### Stack:
-* python
-* git
-* markdown
-
-#### Web Scraping:
-* requests
-* Beautifulsoup
-* json
-* multi-threading
-
-#### Data Storage:
-* sqlite
-* elasticsearch
-
-#### Modeling/Machine Learning
-* NLP
-* Scikit-learn
-* nltk
-* Numpy
-* Pandas
-* TFIDF
-* regex
-
-#### Web App:
-* Flask
-* Bootstrap
-* HTML
-* CSS
-* JavaScript
 
 
 
