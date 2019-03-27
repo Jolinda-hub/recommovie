@@ -1,7 +1,6 @@
 ## Recommovie
----
 
-![homepage](/img/homepage.png)
+![homepage](/img/homepage2.png)
 
 
 ## Installation and Usage
