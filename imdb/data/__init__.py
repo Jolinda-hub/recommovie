@@ -13,4 +13,22 @@ def get_data():
     df_merged = df_merged[df_merged.titleType.notnull()]
     df_merged = df_merged[~df_merged.titleType.isin(['video', 'videoGame', 'tvEpisode'])]
 
-    return df_merged
+    df_selected = generate_score(df_merged)
+
+    return df_selected
+
+
+def generate_score(df, n=30000):
+    """
+    Generate scores of movies
+
+    :param dataframe df: all movies
+    :param int n: how many movies
+    :return: top n movies
+    :rtype: dataframe
+    """
+
+    df.loc[:, 'movieScore'] = df['averageRating'] * df['numVotes']
+    df_sorted = df.sort_values(by='movieScore', ascending=False)
+
+    return df_sorted.head(n)
