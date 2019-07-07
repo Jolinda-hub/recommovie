@@ -92,3 +92,8 @@ def recommendations(movie_id=None, name=None):
     movie_ids = recommend.recommend(movie_id)
     res = db.get_movies(movie_ids=movie_ids)
     return render_template('recommendations.html', items=res, original=name)
+
+
+@app.route('/ping', methods=['GET'])
+def ping():
+    return 'pong'
