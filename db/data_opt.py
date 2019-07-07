@@ -20,7 +20,7 @@ class DataOperation:
         session = connect()
         self.logger.info('Inserting records to data...')
         try:
-            df.to_sql(name='movies2', con=session.bind, if_exists='append', chunksize=50000, index=False)
+            df.to_sql(name='movies', con=session.bind, if_exists='append', chunksize=50000, index=False)
         finally:
             session.close()
 
@@ -104,5 +104,24 @@ class DataOperation:
 
         try:
             return session.query(Movie).filter(*filters).order_by(order_).limit(limit_).all()
+        finally:
+            session.close()
+
+    def get_result(self, query):
+        """
+        Get result of sql query
+
+        :param str query: sql query
+        :return: columns and data
+        :rtype: ([cols], [data])
+        """
+        self.logger.info('Getting sql query results...')
+        session = connect()
+
+        try:
+            result = session.execute(query)
+            cols = result.keys()
+            data = result.fetchall()
+            return cols, data
         finally:
             session.close()

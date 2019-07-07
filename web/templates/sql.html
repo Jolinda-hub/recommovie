@@ -1,0 +1,51 @@
+{% extends "navbar.html" %}
+
+{% block content %}
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-md-12">
+                <div class="card mt-4 mb-4">
+                    <div class="card-body">
+                        <div class="col-xs-12 col-md-12">
+                            <form action="/sql" method="post">
+                                <div class="form-group">
+                                    <label for="exampleFormControlTextarea1">SQL</label>
+                                    <textarea class="form-control" id="exampleFormControlTextarea1" rows="3"
+                                              name="sql"></textarea>
+                                </div>
+                                <button type="submit" class="btn-sql btn-primary">Submit</button>
+                            </form>
+                            <br>
+                            {% if data != None and cols != None %}
+                                <table class="table">
+                                    <thead>
+                                    <tr>
+                                        {% for col in cols %}
+                                            <th scope="col">{{ (col | replace('_', ' ')).title() }}</th>
+                                        {% endfor %}
+                                    </tr>
+                                    </thead>
+                                    <tbody>
+                                    {% for row in data %}
+                                        <tr>
+                                            {% for i in range(row|length) %}
+                                                <td>
+                                                    {% if row[i] is string %}
+                                                        {{ row[i][:50] }}
+                                                    {% else %}
+                                                        {{ row[i] }}
+                                                    {% endif %}
+                                                </td>
+                                            {% endfor %}
+                                        </tr>
+                                    {% endfor %}
+                                    </tbody>
+                                </table>
+                                </div>
+                            {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
