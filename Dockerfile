@@ -12,6 +12,9 @@ WORKDIR /tmp/recommovie
 # install curl fo testing from container
 RUN apt-get update && apt-get -y install curl
 
+# upgrade pip
+RUN pip3 install --upgrade pip
+
 # install required packages
 RUN pip3 install -r requirements.txt
 
