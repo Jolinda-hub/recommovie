@@ -77,8 +77,7 @@ class Recommendation:
         vectorizer = TfidfVectorizer()
 
         # apply vectorizer
-        matrix = vectorizer.fit_transform(self.df['genres'])
-        self.matrix = linear_kernel(matrix, matrix)
+        self.matrix = vectorizer.fit_transform(self.df['genres'])
 
     def recommend(self, movie_id):
         """
@@ -95,7 +94,8 @@ class Recommendation:
         cluster = self.df[self.df.movie_id == movie_id]['cluster'].iloc[0]
 
         # get similarity scores by genres
-        sim_scores = list(enumerate(self.matrix[index]))
+        kernel = linear_kernel(self.matrix[index], self.matrix)
+        sim_scores = list(enumerate(kernel[0]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
         # select movies based on a similarity threshold of 0.5
