@@ -18,9 +18,16 @@ class DataOperation:
         :param dataframe df: dataframe for writing
         """
         session = connect()
-        self.logger.info('Inserting records to data...')
+        self.logger.info('Inserting records to data')
+
+        args = {
+            'name': 'movies',
+            'con': session.bind,
+            'if_exists': 'append',
+            'index': False,
+        }
         try:
-            df.to_sql(name='movies', con=session.bind, if_exists='append', chunksize=50000, index=False)
+            df.to_sql(**args)
         finally:
             session.close()
 
@@ -31,7 +38,7 @@ class DataOperation:
         :return: dataframe contains movie id, genre and description
         :rtype: dataframe
         """
-        self.logger.info('Fetching movie records...')
+        self.logger.info('Fetching movie records')
         session = connect()
 
         cols = [
@@ -41,14 +48,18 @@ class DataOperation:
             Movie.genres,
             Movie.description,
             Movie.kind,
+            Movie.runtime,
+            Movie.num_votes,
         ]
 
         filters = [
-            Movie.description.isnot(None),
+            Movie.runtime.isnot(None),
             Movie.genres.isnot(None),
         ]
 
-        query = session.query(*cols).filter(*filters).order_by(Movie.start_year.desc())
+        query = session.query(*cols) \
+            .filter(*filters) \
+            .order_by(Movie.start_year.desc())
 
         try:
             return pd.read_sql(query.statement, session.bind)
@@ -62,7 +73,7 @@ class DataOperation:
         :return: dataframe contains movie id, genre and description
         :rtype: dataframe
         """
-        self.logger.info('Fetching movie records...')
+        self.logger.info('Fetching movie records')
         session = connect()
 
         cols = [
@@ -83,10 +94,13 @@ class DataOperation:
         :return: last added 6 movies
         :rtype: list
         """
-        self.logger.info('Getting movies...')
+        self.logger.info('Getting movies')
         session = connect()
 
         if movie_ids is not None:
+            if len(movie_ids) > 12:
+                movie_ids = movie_ids[:12]
+
             filters = [
                 Movie.movie_id.in_(movie_ids),
             ]
@@ -103,7 +117,11 @@ class DataOperation:
             limit_ = 6
 
         try:
-            return session.query(Movie).filter(*filters).order_by(order_).limit(limit_).all()
+            return session.query(Movie) \
+                .filter(*filters) \
+                .order_by(order_) \
+                .limit(limit_) \
+                .all()
         finally:
             session.close()
 
@@ -115,7 +133,7 @@ class DataOperation:
         :return: columns and data
         :rtype: ([cols], [data])
         """
-        self.logger.info('Getting sql query results...')
+        self.logger.info('Getting sql query results')
         session = connect()
 
         try:

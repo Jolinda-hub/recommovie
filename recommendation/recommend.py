@@ -1,105 +1,84 @@
 # -*- coding: utf-8 -*-
-from util import Util
-from nltk.corpus import stopwords
+from scipy.signal import argrelextrema
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
-from stemming.porter2 import stem
-import nltk
-import re
-import string
-
-nltk.download('punkt')
-nltk.download('stopwords')
-default_stopwords = stopwords.words('english')
+from sklearn.neighbors.kde import KernelDensity
+from sklearn.preprocessing import LabelEncoder
+from util import Util
+import numpy as np
 
 util = Util()
+config = util.get_params()
 
 
 class Recommendation:
     def __init__(self, df):
         self.logger = util.set_logger('recommendation')
-        self.map_dict = self.mapping(df)
-        self.matrix = self.create_matrix(df)
+        self.matrix = None
+        self.df = df
 
-    def __preproccessing(self, text):
+        self.preproccessing()
+        self.clustering()
+        self.create_matrix()
+
+    def preproccessing(self):
         """
-        Preprocess to input data
-
-        :param str text: text for preproccessing, description + genre
-        :return: processed text
-        :rtype: str
+        Data pre-processing
         """
-        self.logger.info('Text pre-processing is in progress...')
+        le = LabelEncoder()
 
-        # remove html tags
-        text = re.sub(r'<.*?>', '', text)
+        self.df.loc[:, 'kind'] = le.fit_transform(self.df['kind'])
 
-        # remove the characters [\], ['] and ["]
-        text = re.sub(r"\\", "", text)
-        text = re.sub(r"\'", "", text)
-        text = re.sub(r"\"", "", text)
-        text = re.sub(r"\d+", "", text)
+        self.df.loc[:, 'score'] = (
+                float(config['score']['num_votes']) * self.df['num_votes'] +
+                float(config['score']['runtime']) * self.df['runtime'] +
+                float(config['score']['year']) * self.df['start_year'] +
+                float(config['score']['kind']) * self.df['kind']
+        )
 
-        # convert text to lowercase
-        text = text.strip().lower()
+        self.df.reset_index(drop=True, inplace=True)
 
-        # replace punctuation characters with spaces
-        replace_punctuation = str.maketrans(string.punctuation, ' ' * len(string.punctuation))
-        text = str(text).translate(replace_punctuation)
-
-        # stemming (removing ed, es etc.)
-        stems = [stem(word) for word in text.split(' ')]
-
-        # removing stop words
-        words = [w for w in stems if w not in default_stopwords]
-
-        return ' '.join(map(str, words))
-
-    def mapping(self, df):
+    def clustering(self):
         """
-        Mapping between fake id and original id
-
-        :param dataframe df: dataframe for mapping
-        :return: mapping dict
-        :rtype: dict
+        Create clusters by movie scores
         """
-        self.logger.info('Mapping between fake id and original id...')
+        # kernel density estimation
+        values = self.df['score'].values.reshape(-1, 1)
+        kde = KernelDensity(kernel='gaussian', bandwidth=3).fit(values)
 
-        df['fake_id'] = range(1, len(df) + 1)
-        map_dict = dict()
-        for idx, fake_id in zip(df['movie_id'].tolist(), df['fake_id'].tolist()):
-            map_dict[fake_id] = idx
+        # find cluster min-max points
+        s = np.linspace(400, 18000)
+        e = kde.score_samples(s.reshape(-1, 1))
+        mi, ma = argrelextrema(e, np.less)[0], argrelextrema(e, np.greater)[0]
 
-        return map_dict
+        # concat min-max points
+        points = np.concatenate((s[mi], s[ma]), axis=0)
+        buckets = []
 
-    def create_matrix(self, df):
+        for point in points:
+            buckets.append(point)
+
+        buckets = np.array(buckets)
+        buckets.sort()
+
+        # assign clusters
+        self.df.loc[:, 'cluster'] = buckets.searchsorted(self.df.score)
+
+    def create_matrix(self):
         """
         Create matrix with tf-idf vectorizer
 
-        :param dataframe df: dataframe for matrix creating
         :return: list of vectors
         :rtype: numpy.array
         """
-        self.logger.info('Creating matrix from words...')
-
-        args = {
-            'max_df': 0.8,
-            'max_features': 200000,
-            'min_df': 0.2,
-            'use_idf': True,
-            'tokenizer': self.__preproccessing,
-            'ngram_range': (1, 3),
-        }
+        self.logger.info('Creating matrix from words')
 
         # create tf-idf vectorizer
-        tfidf_vectorizer = TfidfVectorizer(**args)
-
-        # encode ascii chars
-        df['description'] = df['description'].apply(lambda x: x.encode('ascii', 'ignore').decode('ascii'))
+        vectorizer = TfidfVectorizer()
 
         # apply vectorizer
-        matrix = tfidf_vectorizer.fit_transform(df['genres'] + df['description'])
-        return matrix
+        matrix = vectorizer.fit_transform(self.df['genres'])
+        self.matrix = linear_kernel(matrix, matrix)
 
     def recommend(self, movie_id):
         """
@@ -109,19 +88,23 @@ class Recommendation:
         :return: recommended movie ids
         :rtype: list
         """
-        self.logger.info(f'Finding recommended films for id={movie_id}...')
+        self.logger.info(f'Finding recommended films for id={movie_id}')
 
-        ks = list(self.map_dict.keys())
-        vls = list(self.map_dict.values())
+        # get index and cluster by selected movie
+        index = self.df[self.df.movie_id == movie_id].index[0]
+        cluster = self.df[self.df.movie_id == movie_id]['cluster'].iloc[0]
 
-        # get fake id from original movie id
-        fake_id = ks[vls.index(str(movie_id))]
-
-        # create kernel with cosine similarity
-        kernel = linear_kernel(self.matrix[fake_id - 1], self.matrix)
-        sim_scores = list(enumerate(kernel[0]))
+        # get similarity scores by genres
+        sim_scores = list(enumerate(self.matrix[index]))
         sim_scores = sorted(sim_scores, key=lambda x: x[1], reverse=True)
 
-        # return original movie ids
-        movie_indices = [i[0] + 1 for i in sim_scores if (i[1] > 0.5) and (i[0] + 1 != fake_id)][0:50]
-        return [str(v) for k, v in self.map_dict.items() if k in movie_indices]
+        # select movies based on a similarity threshold of 0.5
+        indexes = [i[0] for i in sim_scores if i[0] != index and i[1] > .5]
+
+        cond1 = (self.df.index.isin(indexes))
+        cond2 = (self.df.cluster == cluster)
+
+        args = {'by': 'score', 'ascending': False}
+        selected = self.df.loc[cond1 & cond2].sort_values(**args)
+
+        return selected['movie_id'].tolist()
