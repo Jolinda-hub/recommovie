@@ -92,6 +92,7 @@ class Recommendation:
         # get index and cluster by selected movie
         index = self.df[self.df.movie_id == movie_id].index[0]
         cluster = self.df[self.df.movie_id == movie_id]['cluster'].iloc[0]
+        kind = self.df[self.df.movie_id == movie_id]['kind'].iloc[0]
 
         # get similarity scores by genres
         kernel = linear_kernel(self.matrix[index], self.matrix)
@@ -103,8 +104,9 @@ class Recommendation:
 
         cond1 = (self.df.index.isin(indexes))
         cond2 = (self.df.cluster == cluster)
+        cond3 = (self.df.kind == kind)
 
         args = {'by': 'score', 'ascending': False}
-        selected = self.df.loc[cond1 & cond2].sort_values(**args)
+        selected = self.df.loc[cond1 & cond2 & cond3].sort_values(**args)
 
         return selected['movie_id'].tolist()
