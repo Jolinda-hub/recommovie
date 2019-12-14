@@ -1,2 +1,3 @@
 web/static/* linguist-vendored
+web/templates/* linguist-vendored
 notebook/* linguist-vendored
