@@ -113,7 +113,7 @@ class DataOperation:
                 Movie.image_url.isnot(None),
             ]
 
-            order_ = Movie.movie_id.desc()
+            order_ = (Movie.average_rating * Movie.num_votes).desc()
             limit_ = 8
 
         try:
