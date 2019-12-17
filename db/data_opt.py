@@ -114,7 +114,7 @@ class DataOperation:
             ]
 
             order_ = Movie.movie_id.desc()
-            limit_ = 6
+            limit_ = 8
 
         try:
             return session.query(Movie) \
