@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from db import connect
 from db.models import Movie
+from sqlalchemy import func
 from util import Util
 import pandas as pd
 
@@ -103,6 +104,7 @@ class DataOperation:
 
             filters = [
                 Movie.movie_id.in_(movie_ids),
+                Movie.image_url.isnot(None),
             ]
 
             order_ = None
@@ -141,5 +143,23 @@ class DataOperation:
             cols = result.keys()
             data = result.fetchall()
             return cols, data
+        finally:
+            session.close()
+
+    def get_random(self):
+        """
+        Get random movie
+
+        :return: random movie
+        :rtype: movie instance
+        """
+        self.logger.info('Getting random movie')
+        session = connect()
+
+        try:
+            return session.query(Movie) \
+                .order_by(func.random()) \
+                .limit(1) \
+                .scalar()
         finally:
             session.close()

@@ -16,10 +16,11 @@
 
             <div class="collapse navbar-collapse" id="navbarResponsive">
                 <ul class="navbar-nav ml-auto">
-                    <li class="nav-item active">
-                        <a class="nav-link" href="/">Home
-                            <span class="sr-only">(current)</span>
-                        </a>
+                    <li class="nav-item {% if active is not none and active == 1 %}active{% endif %}">
+                        <a class="nav-link" href="/">Home</a>
+                    </li>
+                    <li class="nav-item {% if active is not none and active == 2 %}active{% endif %}">
+                        <a class="nav-link" href="/lucky">I'm Feeling Lucky</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link" href="http://egemenzeytinci.com">Contact</a>

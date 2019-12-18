@@ -33,7 +33,7 @@ def send_images(path):
 @app.route('/', methods=['GET'])
 def index():
     res = db.get_movies()
-    return render_template('index.html', items=res)
+    return render_template('index.html', items=res, active=1)
 
 
 @app.route('/suggest', methods=['GET'])
@@ -61,7 +61,11 @@ def suggest():
     type_ = config['elastic']['type']
 
     # request to elasticsearch
-    res = requests.post(f"http://{host}:{port}/{index_}/{type_}/_search", json=query)
+    args = {
+        'url': f'http://{host}:{port}/{index_}/{type_}/_search',
+        'json': query,
+    }
+    res = requests.post(**args)
     if res.status_code != 200:
         return jsonify(response)
 
@@ -77,7 +81,12 @@ def suggest():
     movies = []
     for item in options:
         source = item['_source']
-        movies.append({'id': item['_id'], 'text': source['name'], 'value': source['year']})
+        data = {
+            'id': item['_id'],
+            'text': source['name'],
+            'value': source['year'],
+        }
+        movies.append(data)
 
     response = {
         'status': True,
@@ -92,6 +101,20 @@ def recommendations(movie_id=None, name=None):
     movie_ids = recommend.recommend(movie_id)
     res = db.get_movies(movie_ids=movie_ids)
     return render_template('recommendations.html', items=res, original=name)
+
+
+@app.route('/lucky', methods=['GET'])
+def lucky():
+    movie = db.get_random()
+    movie_ids = recommend.recommend(movie.movie_id)
+    res = db.get_movies(movie_ids=movie_ids)
+
+    args = {
+        'items': res,
+        'original': movie.title,
+        'active': 2,
+    }
+    return render_template('recommendations.html', **args)
 
 
 @app.route('/ping', methods=['GET'])
