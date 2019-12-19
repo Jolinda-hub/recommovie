@@ -109,4 +109,4 @@ class Recommendation:
         args = {'by': 'score', 'ascending': False}
         selected = self.df.loc[cond1 & cond2 & cond3].sort_values(**args)
 
-        return selected['movie_id'].tolist()
+        return selected['movie_id'].tolist()[:12]

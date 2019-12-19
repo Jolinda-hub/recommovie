@@ -32,8 +32,11 @@ def send_images(path):
 
 @app.route('/', methods=['GET'])
 def index():
-    res = db.get_movies()
-    return render_template('index.html', items=res, active=1)
+    args = {
+        'items': movie_df.head(8).itertuples(),
+        'active': 1,
+    }
+    return render_template('index.html', **args)
 
 
 @app.route('/suggest', methods=['GET'])
@@ -99,18 +102,18 @@ def suggest():
 @app.route('/recommendations/<movie_id>/<name>', methods=['GET'])
 def recommendations(movie_id=None, name=None):
     movie_ids = recommend.recommend(movie_id)
-    res = db.get_movies(movie_ids=movie_ids)
-    return render_template('recommendations.html', items=res, original=name)
+    items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
+    return render_template('recommendations.html', items=items, original=name)
 
 
 @app.route('/lucky', methods=['GET'])
 def lucky():
-    movie = db.get_random()
+    movie = movie_df.sample(1).iloc[0]
     movie_ids = recommend.recommend(movie.movie_id)
-    res = db.get_movies(movie_ids=movie_ids)
+    items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
 
     args = {
-        'items': res,
+        'items': items,
         'original': movie.title,
         'active': 2,
     }
