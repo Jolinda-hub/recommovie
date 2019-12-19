@@ -120,15 +120,3 @@ def lucky():
 @app.route('/ping', methods=['GET'])
 def ping():
     return 'pong'
-
-
-@app.route('/sql', methods=['GET', 'POST'])
-def sql_interface():
-    data = None
-    cols = None
-
-    if request.method == 'POST':
-        query = request.form['sql']
-        cols, data = db.get_result(query)
-
-    return render_template('sql.html', cols=cols, data=data)

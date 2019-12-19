@@ -127,25 +127,6 @@ class DataOperation:
         finally:
             session.close()
 
-    def get_result(self, query):
-        """
-        Get result of sql query
-
-        :param str query: sql query
-        :return: columns and data
-        :rtype: ([cols], [data])
-        """
-        self.logger.info('Getting sql query results')
-        session = connect()
-
-        try:
-            result = session.execute(query)
-            cols = result.keys()
-            data = result.fetchall()
-            return cols, data
-        finally:
-            session.close()
-
     def get_random(self):
         """
         Get random movie
