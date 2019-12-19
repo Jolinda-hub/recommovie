@@ -49,3 +49,7 @@ td {
     width: 20px;
     height: 20px;
 }
+
+.image-url {
+    text-decoration: none !important;
+}

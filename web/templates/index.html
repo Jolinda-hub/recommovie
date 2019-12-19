@@ -50,7 +50,9 @@
                                             <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>
                                         </div>
                                         <div class="card-footer">
-                                            <img class="imdb" src="/img/imdb.png">
+                                           <a class="image-url" href="https://www.imdb.com/title/{{ row.movie_id }}/">
+                                               <img class="imdb" src="/img/imdb.png">
+                                           </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>
                                         </div>
                                     </div>
