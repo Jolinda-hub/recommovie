@@ -109,3 +109,4 @@ ENV/
 # static data
 *.csv
 *.tsv
+*.gz

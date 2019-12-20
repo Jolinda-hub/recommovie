@@ -6,16 +6,16 @@ def get_data():
     :return: dataframe contains movies information
     :rtype: dataframe
     """
-    df_title = pd.read_csv('imdb/data/title.basics.tsv', sep='\t')
-    df_ratings = pd.read_csv('imdb/data/title.ratings.tsv', sep='\t')
+    df_title = pd.read_csv('imdb/data/title.basics.tsv.gz', sep='\t')
+    df_ratings = pd.read_csv('imdb/data/title.ratings.tsv.gz', sep='\t')
 
     df_merged = df_title.merge(df_ratings, on='tconst')
     df_merged = df_merged[df_merged.titleType.notnull()]
-    df_merged = df_merged[~df_merged.titleType.isin(['video', 'videoGame', 'tvEpisode'])]
 
-    df_selected = generate_score(df_merged)
+    types = ['video', 'videoGame', 'tvEpisode']
+    df_merged = df_merged[~df_merged.titleType.isin(types)]
 
-    return df_selected
+    return generate_score(df_merged)
 
 
 def generate_score(df, n=30000):

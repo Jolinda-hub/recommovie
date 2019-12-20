@@ -42,7 +42,8 @@ class Crawler:
         img = None
         description = None
 
-        full_info = content.find('script', attrs={'type': 'application/ld+json'}).text
+        attrs = {'type': 'application/ld+json'}
+        full_info = content.find('script', attrs=attrs).text
         info_dict = json.loads(full_info)
 
         if 'image' in info_dict.keys():
@@ -117,12 +118,14 @@ class Crawler:
                 try:
                     data = future.result()
                 except Exception as exc:
-                    self.logger.error('%r generated an exception: %s' % (movie_id, exc))
+                    err = '%r generated an exception: %s' % (movie_id, exc)
+                    self.logger.error(err)
                     errors += 1
                 else:
                     records.append(data + (movie_id,))
 
-        df_img = pd.DataFrame(records, columns=['image_url', 'description', 'tconst'])
+        columns = ['image_url', 'description', 'tconst']
+        df_img = pd.DataFrame(records, columns=columns)
         df_all = df_img.merge(df, on='tconst')
 
         df_last = self.edit(df_all)
