@@ -1,134 +1,127 @@
-# -*- coding: utf-8 -*-
 from bs4 import BeautifulSoup
-from imdb.data import get_data
 from db.data_opt import DataOperation
+from imdb.data import get_data
 from util import Util
-import concurrent.futures
 import json
+import multiprocessing as mp
 import pandas as pd
 import requests
+import time
+import tqdm
 
 util = Util()
 db = DataOperation()
 
+logger = util.set_logger('crawler')
+BASE_PATH = ' http://www.imdb.com/title/'
 
-class Crawler:
-    def __init__(self):
-        self.logger = util.set_logger('crawler')
-        self.base_path = ' http://www.imdb.com/title/'
 
-    def __get_page(self, movie_id):
-        """
-        Get page source
+def get_page(movie_id):
+    """
+    Get page source
 
-        :param str movie_id: movie id like tt0000001
-        :return: http response
-        :rtype: str
-        """
-        self.logger.info('Request being set...')
-        full_path = self.base_path + movie_id
-        resp = requests.get(full_path)
-        return resp.text if resp.status_code == 200 else None
+    :param str movie_id: movie id like tt0000001
+    :return: http response
+    :rtype: str
+    """
+    full_path = BASE_PATH + movie_id
+    resp = requests.get(full_path)
+    return resp.text if resp.status_code == 200 else None
 
-    def __parse(self, content):
-        """
-        Get image url and description
 
-        :param bs4.BeautifulSoup content: BeautifulSoup from html content
-        :return: image and description
-        :rtype: tuple
-        """
-        self.logger.info('Parsing ld json...')
-        img = None
-        description = None
+def parse(content):
+    """
+    Get image url, description and trailer id
 
-        attrs = {'type': 'application/ld+json'}
-        full_info = content.find('script', attrs=attrs).text
-        info_dict = json.loads(full_info)
+    :param bs4.BeautifulSoup content: BeautifulSoup from html content
+    :return: image, description and trailer id
+    :rtype: tuple
+    """
+    img = description = trailer_id = None
 
-        if 'image' in info_dict.keys():
-            img = info_dict['image']
-        if 'description' in info_dict.keys():
-            description = info_dict['description']
+    attrs = {'type': 'application/ld+json'}
+    full_info = content.find('script', attrs=attrs).text
+    info_dict = json.loads(full_info)
 
-        return img, description
+    if 'image' in info_dict.keys():
+        img = info_dict['image']
+    if 'description' in info_dict.keys():
+        description = info_dict['description']
+    if 'trailer' in info_dict.keys():
+        trailer_id = info_dict['trailer']['embedUrl'].split('/')[3]
 
-    def append(self, movie_id):
-        """
-        Create beautiful soup
+    return img, description, trailer_id
 
-        :param str movie_id: movie id like tt0000001
-        :return: image and description
-        :rtype: tuple
-        """
-        resp = self.__get_page(movie_id)
+
+def append(movie_id):
+    """
+    Create beautiful soup
+
+    :param str movie_id: movie id like tt0000001
+    :return: image, description and trailer id
+    :rtype: tuple
+    """
+    img = description = trailer_id = None
+
+    try:
+        resp = get_page(movie_id)
         soup = BeautifulSoup(resp, 'html.parser')
+        img, description, trailer_id = parse(soup)
+    except Exception as e:
+        logger.error(f'An error occurred: {e.args} for movie_id={movie_id}')
+        time.sleep(10)
 
-        img, description = self.__parse(soup)
+    return movie_id, img, description, trailer_id
 
-        return img, description
 
-    def edit(self, df):
-        """
-        Map columns for db insert
+def edit(df):
+    """
+    Map columns for db insert
 
-        :param dataframe df: dataframe for renaming columns
-        :return: renamed-decoded dataframe
-        :rtype: dataframe
-        """
-        self.logger.info('Editing last dataframe...')
+    :param dataframe df: dataframe for renaming columns
+    :return: renamed-decoded dataframe
+    :rtype: dataframe
+    """
+    column_maps = {
+        'tconst': 'movie_id',
+        'titleType': 'kind',
+        'primaryTitle': 'primary_title',
+        'originalTitle': 'title',
+        'isAdult': 'is_adult',
+        'startYear': 'start_year',
+        'endYear': 'end_year',
+        'runtimeMinutes': 'runtime',
+        'averageRating': 'average_rating',
+        'numVotes': 'num_votes',
+    }
 
-        column_maps = {
-            'tconst': 'movie_id',
-            'titleType': 'kind',
-            'primaryTitle': 'primary_title',
-            'originalTitle': 'title',
-            'isAdult': 'is_adult',
-            'startYear': 'start_year',
-            'endYear': 'end_year',
-            'runtimeMinutes': 'runtime',
-            'averageRating': 'average_rating',
-            'numVotes': 'num_votes',
-        }
+    replaced = df.replace('\\N', '')
+    renamed = replaced.rename(columns=column_maps)
+    return renamed
 
-        replaced = df.replace('\\N', '')
-        renamed = replaced.rename(columns=column_maps)
-        return renamed
 
-    def crawl(self):
-        """
-        Crawl movies description and image url
+def crawl(args):
+    """
+    Crawl movies description and image url
 
-        :return: error count from movies crawler
-        :rtype: int
-        """
-        df = get_data()
+    :param dict args: arguments
+    :return: movies
+    :rtype: pd.DataFrame
+    """
+    movies = get_data(n=args['c'])
+    old_ids = db.get_movie_ids()
 
-        records = []
-        future_to_id = {}
-        errors = 0
+    df = movies[~movies.tconst.isin(old_ids)]
 
-        with concurrent.futures.ThreadPoolExecutor(max_workers=8) as executor:
-            for movie_id in df['tconst'].unique():
-                submission = executor.submit(self.append, movie_id)
-                future_to_id[submission] = movie_id
+    pool = mp.Pool(args['w'])
+    ids = df['tconst'].unique()
 
-            for future in concurrent.futures.as_completed(future_to_id):
-                movie_id = future_to_id[future]
-                try:
-                    data = future.result()
-                except Exception as exc:
-                    err = '%r generated an exception: %s' % (movie_id, exc)
-                    self.logger.error(err)
-                    errors += 1
-                else:
-                    records.append(data + (movie_id,))
+    records = list(tqdm.tqdm(pool.imap(append, ids), total=len(ids)))
+    pool.close()
+    pool.join()
 
-        columns = ['image_url', 'description', 'tconst']
-        df_img = pd.DataFrame(records, columns=columns)
-        df_all = df_img.merge(df, on='tconst')
+    columns = ['tconst', 'image_url', 'description', 'trailer_id']
+    df_img = pd.DataFrame(records, columns=columns)
+    df_all = df_img.merge(df, on='tconst')
 
-        df_last = self.edit(df_all)
-        db.insert(df_last)
-
-        return errors
+    return edit(df_all)

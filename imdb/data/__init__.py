@@ -1,34 +1,38 @@
 import pandas as pd
 
 
-def get_data():
+def get_data(n):
     """
     :return: dataframe contains movies information
     :rtype: dataframe
     """
-    df_title = pd.read_csv('imdb/data/title.basics.tsv.gz', sep='\t')
-    df_ratings = pd.read_csv('imdb/data/title.ratings.tsv.gz', sep='\t')
+    args = {
+        'sep': '\t',
+        'low_memory': False,
+    }
+    df_title = pd.read_csv('imdb/data/title.basics.tsv.gz', **args)
+    df_ratings = pd.read_csv('imdb/data/title.ratings.tsv.gz', **args)
 
-    df_merged = df_title.merge(df_ratings, on='tconst')
-    df_merged = df_merged[df_merged.titleType.notnull()]
+    merged = df_title.merge(df_ratings, on='tconst')
+    merged = merged[merged.titleType.notnull()]
 
     types = ['video', 'videoGame', 'tvEpisode']
-    df_merged = df_merged[~df_merged.titleType.isin(types)]
+    merged = merged[~merged.titleType.isin(types)]
 
-    return generate_score(df_merged)
+    # if set n to False, get all movies
+    if not n:
+        return merged
+
+    return generate_score(merged)[:n]
 
 
-def generate_score(df, n=30000):
+def generate_score(df):
     """
     Generate scores of movies
 
     :param dataframe df: all movies
-    :param int n: how many movies
-    :return: top n movies
+    :return: dataframe with scores
     :rtype: dataframe
     """
-
-    df.loc[:, 'movieScore'] = df['averageRating'] * df['numVotes']
-    df_sorted = df.sort_values(by='movieScore', ascending=False)
-
-    return df_sorted.head(n)
+    df.loc[:, 'score'] = df['averageRating'] * df['numVotes']
+    return df.sort_values(by='score', ascending=False).drop('score', axis=1)

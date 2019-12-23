@@ -1,20 +1,14 @@
-from imdb.crawler import Crawler
-from util import Util
+from imdb.crawler import crawl, db, util
 
 
 def main():
-    crawler = Crawler()
-    util = Util()
-    logger = util.set_logger('main')
+    arguments = util.parse_arguments()
 
     # crawl movies
-    errors = crawler.crawl()
+    df_last = crawl(arguments)
 
-    # check error count from crawler
-    if errors == 0:
-        logger.info('Crawler done successfully!')
-    else:
-        logger.error(f'Crawler: Error occurred in {errors} movies!')
+    # insert to db
+    db.insert(df_last)
 
 
 if __name__ == '__main__':

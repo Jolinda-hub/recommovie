@@ -6,7 +6,10 @@ util = Util()
 db = DataOperation()
 
 config = util.get_params()
-es = Elasticsearch(hosts=[{'host': config['elastic']['host'], 'port': config['elastic']['port']}])
+es = Elasticsearch(hosts=[{
+    'host': config['elastic']['host'],
+    'port': config['elastic']['port']
+}])
 
 
 class Elastic:
@@ -68,9 +71,12 @@ class Elastic:
         message = None
 
         try:
-            es.indices.create(index=config['elastic']['index'], body=request_body)
+            es.indices.create(
+                index=config['elastic']['index'],
+                body=request_body
+            )
         except exceptions.RequestError as e:
             if not e.args[1] == 'resource_already_exists_exception':
                 message = e.args
-        finally:
-            return message
+
+        return message

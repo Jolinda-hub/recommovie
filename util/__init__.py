@@ -3,7 +3,10 @@ import configparser
 import logging
 import sys
 
-logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.ERROR)
+logging.basicConfig(
+    format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
+    level=logging.ERROR
+)
 
 
 class Util:
@@ -16,9 +19,22 @@ class Util:
         :rtype: dict
         """
         parser = argparse.ArgumentParser()
-        parser.add_argument('--offline', help='Reading data from website or locale', action='store_true')
+        parser.add_argument(
+            '--c',
+            help='how many movies',
+            type=int,
+            required=False,
+            default=100000
+        )
+        parser.add_argument(
+            '--w',
+            help='how many workers',
+            type=int,
+            required=False,
+            default=8
+        )
 
-        args = parser.parse_args()
+        args, _ = parser.parse_known_args()
         return args.__dict__
 
     @staticmethod

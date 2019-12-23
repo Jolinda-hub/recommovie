@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from scipy.signal import argrelextrema
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -27,8 +26,14 @@ class Recommendation:
         """
         le = LabelEncoder()
 
+        # str to int with label encoder
         self.df.loc[:, 'kind'] = le.fit_transform(self.df['kind'])
 
+        # drop null values
+        cols = ['num_votes', 'runtime', 'start_year', 'kind', 'genres']
+        self.df.dropna(subset=cols, inplace=True)
+
+        # calculate score
         self.df.loc[:, 'score'] = (
                 float(config['score']['num_votes']) * self.df['num_votes'] +
                 float(config['score']['runtime']) * self.df['runtime'] +

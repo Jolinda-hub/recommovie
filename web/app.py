@@ -51,7 +51,8 @@ def suggest():
             'movie': {
                 'prefix': movie_id,
                 'completion': {
-                    'field': 'name'
+                    'field': 'name',
+                    'size': 10
                 }
             }
         }
@@ -93,7 +94,7 @@ def suggest():
 
     response = {
         'status': True,
-        'movies': movies[0:3]
+        'movies': movies[:10]
     }
 
     return jsonify(response)

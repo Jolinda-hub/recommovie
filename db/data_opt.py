@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from db import connect
 from db.models import Movie
 from util import Util
@@ -87,5 +86,21 @@ class DataOperation:
 
         try:
             return session.query(*cols).all()
+        finally:
+            session.close()
+
+    def get_movie_ids(self):
+        """
+        Get movie ids
+
+        :return: movie ids
+        :rtype: list
+        """
+        self.logger.info('Fetching movie ids')
+        session = connect()
+
+        try:
+            ids = session.query(Movie.movie_id).all()
+            return [row.movie_id for row in ids]
         finally:
             session.close()

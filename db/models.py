@@ -1,4 +1,3 @@
-# -*- coding: utf-8 -*-
 from sqlalchemy import Column, Float, String, Integer, Text, Boolean
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
@@ -13,6 +12,7 @@ class Movie(Base):
     title = Column(String(250), nullable=False, index=True)
     primary_title = Column(String(250), nullable=False, index=True)
     genres = Column(String(50), nullable=True, index=True)
+    trailer_id = Column(String(50), nullable=True, index=True)
     kind = Column(String(50), nullable=True, index=True)
     description = Column(Text, nullable=True, index=True)
     image_url = Column(Text, nullable=True, index=True)
