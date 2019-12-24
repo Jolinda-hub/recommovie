@@ -1,3 +1,4 @@
 web/static/* linguist-vendored
 web/templates/* linguist-vendored
 notebook/* linguist-vendored
+*.db filter=lfs diff=lfs merge=lfs -text
