@@ -102,9 +102,17 @@ def suggest():
 
 @app.route('/recommendations/<movie_id>/<name>', methods=['GET'])
 def recommendations(movie_id=None, name=None):
-    movie_ids = recommend.recommend(movie_id)
-    items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
-    return render_template('recommendations.html', items=items, original=name)
+    try:
+        movie_ids = recommend.recommend(movie_id)
+        items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
+
+        args = {
+            'items': items,
+            'original': name,
+        }
+        return render_template('recommendations.html', **args)
+    except:
+        return render_template('error.html')
 
 
 @app.route('/lucky', methods=['GET'])
