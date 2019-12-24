@@ -31,6 +31,7 @@ class Recommendation:
 
         # drop null values
         cols = ['num_votes', 'runtime', 'start_year', 'kind', 'genres']
+        self.df = self.df.replace('', np.nan)
         self.df.dropna(subset=cols, inplace=True)
 
         # calculate score
@@ -52,7 +53,7 @@ class Recommendation:
         kde = KernelDensity(kernel='gaussian', bandwidth=3).fit(values)
 
         # find cluster min-max points
-        s = np.linspace(400, 18000)
+        s = np.linspace(650, 18000)
         e = kde.score_samples(s.reshape(-1, 1))
         mi, ma = argrelextrema(e, np.less)[0], argrelextrema(e, np.greater)[0]
 
