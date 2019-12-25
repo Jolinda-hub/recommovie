@@ -30,9 +30,9 @@ def generate_score(df):
     """
     Generate scores of movies
 
-    :param dataframe df: all movies
-    :return: dataframe with scores
-    :rtype: dataframe
+    :param pd.DataFrame df: all movies
+    :return: data frame with scores
+    :rtype: pd.DataFrame
     """
     df.loc[:, 'score'] = df['averageRating'] * df['numVotes']
     return df.sort_values(by='score', ascending=False).drop('score', axis=1)

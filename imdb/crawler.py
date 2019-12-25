@@ -78,7 +78,7 @@ def edit(df):
     """
     Map columns for db insert
 
-    :param pd.DataFrame df: dataframe for renaming columns
+    :param pd.DataFrame df: data frame for renaming columns
     :return: renamed-decoded data frame
     :rtype: pd.DataFrame
     """
