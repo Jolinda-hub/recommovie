@@ -16,7 +16,7 @@ class Elastic:
     @staticmethod
     def insert_elastic():
         """
-        Insert records to elasticsearch
+        Insert records to elastic
 
         :return: difference between inserted and sent
         :rtype: int
@@ -31,7 +31,10 @@ class Elastic:
                 '_type': f"{config['elastic']['type']}",
                 '_id': item[0],
                 '_source': {
-                    'name': item[1],
+                    'name': {
+                        'input': item[1].split(),
+                        'weight': int(item[3])
+                    },
                     'year': item[2],
                 },
             }
@@ -43,7 +46,7 @@ class Elastic:
     @staticmethod
     def create_index():
         """
-        Create index in elasticsearch
+        Create index in elastic
 
         :return: status of request
         :rtype: bool

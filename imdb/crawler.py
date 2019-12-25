@@ -78,9 +78,9 @@ def edit(df):
     """
     Map columns for db insert
 
-    :param dataframe df: dataframe for renaming columns
-    :return: renamed-decoded dataframe
-    :rtype: dataframe
+    :param pd.DataFrame df: dataframe for renaming columns
+    :return: renamed-decoded data frame
+    :rtype: pd.DataFrame
     """
     column_maps = {
         'tconst': 'movie_id',

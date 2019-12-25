@@ -45,7 +45,7 @@ def suggest():
 
     response = {'status': False}
 
-    # set query for elasticsearch
+    # set query for elastic
     query = {
         'suggest': {
             'movie': {
@@ -64,7 +64,7 @@ def suggest():
     index_ = config['elastic']['index']
     type_ = config['elastic']['type']
 
-    # request to elasticsearch
+    # request to elastic
     args = {
         'url': f'http://{host}:{port}/{index_}/{type_}/_search',
         'json': query,
@@ -87,7 +87,7 @@ def suggest():
         source = item['_source']
         data = {
             'id': item['_id'],
-            'text': source['name'],
+            'text': ' '.join(source['name']['input']),
             'value': source['year'],
         }
         movies.append(data)

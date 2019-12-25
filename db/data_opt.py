@@ -14,7 +14,7 @@ class DataOperation:
         """
         Insert data
 
-        :param dataframe df: dataframe for writing
+        :param pd.DataFrame df: data frame for writing
         """
         session = connect()
         self.logger.info('Inserting records to data')
@@ -34,8 +34,8 @@ class DataOperation:
         """
         Get movies for recommendation
 
-        :return: dataframe contains movie id, genre and description
-        :rtype: dataframe
+        :return: data frame contains movie id, genre and description
+        :rtype: pd.DataFrame
         """
         self.logger.info('Fetching movie records')
         session = connect()
@@ -70,10 +70,10 @@ class DataOperation:
 
     def get_items(self):
         """
-        Get items for insert to elasticsearch
+        Get items for insert to elastic
 
-        :return: dataframe contains movie id, genre and description
-        :rtype: dataframe
+        :return: data frame contains movie id, genre and description
+        :rtype: pd.DataFrame
         """
         self.logger.info('Fetching movie records')
         session = connect()
@@ -81,7 +81,8 @@ class DataOperation:
         cols = [
             Movie.movie_id,
             Movie.primary_title,
-            Movie.start_year
+            Movie.start_year,
+            Movie.average_rating * Movie.num_votes
         ]
 
         try:

@@ -3,8 +3,8 @@ import pandas as pd
 
 def get_data(n):
     """
-    :return: dataframe contains movies information
-    :rtype: dataframe
+    :return: data frame contains movies information
+    :rtype: pd.DataFrame
     """
     args = {
         'sep': '\t',

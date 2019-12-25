@@ -20,14 +20,14 @@ def main():
     else:
         logger.error(f'Error occurred in creating index:\n {msg}')
 
-    # insert records to elasticsearch
+    # insert records to elastic
     diff = elastic.insert_elastic()
 
     # check that it was inserted
     if diff == 0:
-        logger.info('Movies inserted successfully to elasticsearch!')
+        logger.info('Movies inserted successfully to elastic!')
     else:
-        logger.error(f'Elasticsearch: Error occurred in {diff} movies!')
+        logger.error(f'Elastic: Error occurred in {diff} movies!')
 
     # run web app
     app.run(host='0.0.0.0', port=5002, debug=config['app'].getboolean('debug'))
