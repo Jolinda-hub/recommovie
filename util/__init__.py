@@ -3,6 +3,7 @@ import configparser
 import logging
 import sys
 
+DEFAULT_PATH = 'config.ini'
 logging.basicConfig(
     format='%(asctime)s - %(name)s - %(levelname)s - %(message)s',
     level=logging.ERROR
@@ -50,6 +51,9 @@ class Util:
     def get_params():
         config = configparser.ConfigParser()
         conf_path = sys.argv[-1:][0]
-        config.read(conf_path)
 
+        if not conf_path.endswith('ini'):
+            conf_path = DEFAULT_PATH
+
+        config.read(conf_path)
         return config
