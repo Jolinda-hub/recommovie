@@ -108,7 +108,7 @@ def crawl(args):
     :return: movies
     :rtype: pd.DataFrame
     """
-    movies = get_data(n=args['c'])
+    movies = get_data(n=args['c'], update=args['u'])
     old_ids = db.get_movie_ids()
 
     df = movies[~movies.tconst.isin(old_ids)]
