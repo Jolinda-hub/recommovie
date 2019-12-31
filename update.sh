@@ -16,3 +16,6 @@ python3 -c "if 1:
       print(diff)
       sys.exit(1)
 "
+
+rm imdb/data/title.basics.tsv.gz
+rm imdb/data/title.ratings.tsv.gz
