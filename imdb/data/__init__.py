@@ -1,40 +1,35 @@
-import gzip
+from db.data_opt import DataOperation
 import pandas as pd
 
+db = DataOperation()
 
-def get_data(n, update):
+PATH_BASICS = 'imdb/data/title.basics.tsv.gz'
+PATH_RATINGS = 'imdb/data/title.ratings.tsv.gz'
+
+
+def get_data(n):
     """
     :param int n: top n movies
-    :param bool update: is update or crawling
 
     :return: data frame contains movies information
     :rtype: pd.DataFrame
     """
-    n_lines = 0
+    old_ids = db.get_movie_ids()
+    df_ratings = pd.read_csv(PATH_RATINGS, sep='\t')
 
-    if update:
-        n_lines = sum(1 for _ in gzip.open('imdb/data/title.basics.tsv.gz'))
-
-    args = {
-        'sep': '\t',
-        'low_memory': False,
-        'skiprows': range(1, n_lines - 1000)
-    }
-    df_title = pd.read_csv('imdb/data/title.basics.tsv.gz', **args)
-    args.pop('skiprows', None)
-    df_ratings = pd.read_csv('imdb/data/title.ratings.tsv.gz', **args)
-
-    merged = df_title.merge(df_ratings, on='tconst')
-    merged = merged[merged.titleType.notnull()]
-
-    types = ['video', 'videoGame', 'tvEpisode']
-    merged = merged[~merged.titleType.isin(types)]
+    df = pd.DataFrame()
+    for chunk in pd.read_csv(PATH_BASICS, chunksize=50000, sep='\t'):
+        cond1 = ~chunk.titleType.isin(['video', 'videoGame', 'tvEpisode'])
+        cond2 = ~chunk.tconst.isin(old_ids)
+        cond3 = chunk.titleType.notnull()
+        filtered = chunk[cond1 & cond2 & cond3].merge(df_ratings, on='tconst')
+        df = pd.concat([df, filtered], sort=False)
 
     # if set n to False, get all movies
     if not n:
-        return merged
+        return df
 
-    return generate_score(merged)[:n]
+    return generate_score(df)[:n]
 
 
 def generate_score(df):

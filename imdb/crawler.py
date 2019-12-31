@@ -1,5 +1,4 @@
 from bs4 import BeautifulSoup
-from db.data_opt import DataOperation
 from imdb.data import get_data
 from util import Util
 import json
@@ -10,7 +9,6 @@ import time
 import tqdm
 
 util = Util()
-db = DataOperation()
 
 logger = util.set_logger('crawler')
 BASE_PATH = ' http://www.imdb.com/title/'
@@ -108,10 +106,7 @@ def crawl(args):
     :return: movies
     :rtype: pd.DataFrame
     """
-    movies = get_data(n=args['c'], update=args['u'])
-    old_ids = db.get_movie_ids()
-
-    df = movies[~movies.tconst.isin(old_ids)]
+    df = get_data(n=args['c'])
 
     pool = mp.Pool(args['w'])
     ids = df['tconst'].unique()

@@ -1,7 +1,9 @@
-from imdb.crawler import crawl, db, util
+from db.data_opt import DataOperation
+from imdb.crawler import crawl, util
 
 
 def main():
+    db = DataOperation()
     arguments = util.parse_arguments()
 
     # crawl movies

@@ -34,12 +34,6 @@ class Util:
             required=False,
             default=8
         )
-        parser.add_argument(
-            '--u',
-            help='is update?',
-            action='store_true',
-            required=False
-        )
 
         args, _ = parser.parse_known_args()
         return args.__dict__
