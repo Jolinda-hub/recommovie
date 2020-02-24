@@ -1,10 +1,13 @@
 from db.data_opt import DataOperation
+from util import Util
 import pandas as pd
 
 db = DataOperation()
+util = Util()
+config = util.get_params()
 
-PATH_BASICS = 'imdb/data/title.basics.tsv.gz'
-PATH_RATINGS = 'imdb/data/title.ratings.tsv.gz'
+PATH_BASICS = f"{config['crawler']['path']}/title.basics.tsv.gz"
+PATH_RATINGS = f"{config['crawler']['path']}/title.ratings.tsv.gz"
 
 
 def get_data(n):
