@@ -35,6 +35,6 @@ $("#selector").typeahead({
         },
     }
 ).bind('typeahead:select', function (ev, suggestion) {
-    window.location.href = `/recommendations/${suggestion.id.toString()}/${suggestion.text}`;
+    window.location.href = `/recommendations/${suggestion.id.toString()}`;
     ev.preventDefault();
 });

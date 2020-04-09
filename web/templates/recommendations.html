@@ -19,7 +19,7 @@
                                         <a href="#"><img class="card-img-top" src={{ row.image_url }} alt=""></a>
                                         <div class="card-body">
                                             <h4 class="card-title">
-                                                <a href="/recommendations/{{ row.movie_id }}/{{ row.title }}">{{ row.title }}</a>
+                                                <a href="/recommendations/{{ row.movie_id }}">{{ row.title }}</a>
                                             </h4>
                                             <h5>{{ row.year }}</h5>
                                             <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>

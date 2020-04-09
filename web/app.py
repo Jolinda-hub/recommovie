@@ -100,9 +100,10 @@ def suggest():
     return jsonify(response)
 
 
-@app.route('/recommendations/<movie_id>/<name>', methods=['GET'])
-def recommendations(movie_id=None, name=None):
+@app.route('/recommendations/<movie_id>', methods=['GET'])
+def recommendations(movie_id=None):
     try:
+        name = movie_df[movie_df.movie_id == movie_id]['title'].iloc[0]
         movie_ids = recommend.recommend(movie_id)
         items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
 
