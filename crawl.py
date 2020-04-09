@@ -7,7 +7,7 @@ def main():
     arguments = util.parse_arguments()
 
     # crawl movies
-    df_last = crawl(arguments)
+    df_last = crawl(arguments).drop_duplicates(subset=['movie_id'])
 
     # insert to db
     db.insert(df_last)
