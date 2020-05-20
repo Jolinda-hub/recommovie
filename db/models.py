@@ -1,27 +1,44 @@
-from sqlalchemy import Column, Float, String, Integer, Text, Boolean
+from sqlalchemy import (
+    Boolean, Column, Float, ForeignKey, Integer, String, Text
+)
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import create_engine
 
 Base = declarative_base()
 
 
-class Movie(Base):
-    __tablename__ = 'movies'
+class Basic(Base):
+    __tablename__ = 'basics'
 
-    movie_id = Column(String(9), primary_key=True)
-    title = Column(String(250), nullable=False, index=True)
-    primary_title = Column(String(250), nullable=False, index=True)
-    genres = Column(String(50), nullable=True, index=True)
-    trailer_id = Column(String(50), nullable=True, index=True)
-    kind = Column(String(50), nullable=True, index=True)
-    description = Column(Text, nullable=True, index=True)
-    image_url = Column(Text, nullable=True, index=True)
-    average_rating = Column(Float, nullable=True)
-    num_votes = Column(Integer, nullable=True)
-    start_year = Column(Integer, nullable=True)
-    end_year = Column(Integer, nullable=True)
-    is_adult = Column(Boolean, nullable=True)
-    runtime = Column(Integer, nullable=True)
+    title_id = Column('title_id', String(10), primary_key=True)
+    title_type = Column('title_type', String(250))
+    primary_title = Column('primary_title', String(250))
+    original_title = Column('original_title', String(250))
+    is_adult = Column('is_adult', Boolean)
+    start_year = Column('start_year', Integer)
+    end_year = Column('end_year', Integer)
+    runtime = Column('runtime', Integer)
+    genres = Column('genres', String(50))
+    description = Column(Text)
+    image_url = Column(Text)
+    is_crawled = Column('is_crawled', Boolean, default=False)
+
+
+class Episode(Base):
+    __tablename__ = 'episodes'
+
+    title_id = Column('title_id', String(9), primary_key=True)
+    parent_id = Column('parent_id', String(9), ForeignKey('basics.title_id'))
+    season_number = Column('season_number', Integer)
+    episode_number = Column('episode_number', Integer)
+
+
+class Rating(Base):
+    __tablename__ = 'ratings'
+
+    title_id = Column('title_id', String(9), primary_key=True)
+    average_rating = Column('average_rating', Float)
+    num_votes = Column('num_votes', Integer)
 
 
 # Create only once

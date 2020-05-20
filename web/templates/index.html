@@ -38,19 +38,19 @@
                         <div class="row">
                             {% for row in items %}
                                 {% set image_url = row.image_url %}
-                                {% set movie_url = '/recommendations/' + row.movie_id %}
+                                {% set movie_url = '/recommendations/' + row.title_id %}
                                 <div class="col-lg-3 col-md-6 mb-4">
                                     <div class="card h-100">
                                         <a href="#"><img class="card-img-top" src="{{ image_url }}" alt=""></a>
                                         <div class="card-body">
                                             <h4 class="card-title">
-                                                <a href="{{ movie_url }}">{{ row.title }}</a>
+                                                <a href="{{ movie_url }}">{{ row.original_title }}</a>
                                             </h4>
                                             <h5>{{ row.year }}</h5>
                                             <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>
                                         </div>
                                         <div class="card-footer">
-                                           <a class="image-url" href="https://www.imdb.com/title/{{ row.movie_id }}/">
+                                           <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
                                                <img class="imdb" src="/img/imdb.png">
                                            </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>

@@ -1,17 +1,16 @@
 from flask import Flask, request, render_template, send_from_directory, jsonify
-from db.data_opt import DataOperation
+from db.factory import Factory
 from recommendation.recommend import Recommendation
-from util import Util
+from util import get_params
 import requests
 
-db = DataOperation()
-util = Util()
-config = util.get_params()
+config = get_params()
+factory = Factory()
 
 app = Flask(__name__)
 app.secret_key = config['app']['secret']
 
-movie_df = db.get_dataframe()
+movie_df = factory.get_dataframe()
 recommend = Recommendation(movie_df)
 
 
@@ -103,9 +102,10 @@ def suggest():
 @app.route('/recommendations/<movie_id>', methods=['GET'])
 def recommendations(movie_id=None):
     try:
-        name = movie_df[movie_df.movie_id == movie_id]['title'].iloc[0]
+        condition = movie_df.title_id == movie_id
+        name = movie_df[condition]['original_title'].iloc[0]
         movie_ids = recommend.recommend(movie_id)
-        items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
+        items = movie_df[movie_df.title_id.isin(movie_ids)].itertuples()
 
         args = {
             'items': items,
@@ -119,12 +119,12 @@ def recommendations(movie_id=None):
 @app.route('/lucky', methods=['GET'])
 def lucky():
     movie = movie_df.sample(1).iloc[0]
-    movie_ids = recommend.recommend(movie.movie_id)
-    items = movie_df[movie_df.movie_id.isin(movie_ids)].itertuples()
+    movie_ids = recommend.recommend(movie.title_id)
+    items = movie_df[movie_df.title_id.isin(movie_ids)].itertuples()
 
     args = {
         'items': items,
-        'original': movie.title,
+        'original': movie.original_title,
         'active': 2,
     }
     return render_template('recommendations.html', **args)

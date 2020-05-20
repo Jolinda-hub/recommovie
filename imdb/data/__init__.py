@@ -1,47 +1,87 @@
-from db.data_opt import DataOperation
-from util import Util
+from db import connect
+from db.factory import Factory
+from util import *
+import numpy as np
 import pandas as pd
+import re
 
-db = DataOperation()
-util = Util()
-config = util.get_params()
+config = get_params()
+factory = Factory()
+logger = set_logger('imdb data')
 
-PATH_BASICS = f"{config['crawler']['path']}/title.basics.tsv.gz"
-PATH_RATINGS = f"{config['crawler']['path']}/title.ratings.tsv.gz"
+path_config = {
+    'basics': f"{config['crawler']['path']}/title.basics.tsv.gz",
+    'episodes': f"{config['crawler']['path']}/title.episode.tsv.gz",
+    'ratings': f"{config['crawler']['path']}/title.ratings.tsv.gz"
+}
+
+mapping = {
+    'tconst': 'title_id',
+    'runtimeMinutes': 'runtime',
+    'parentTconst': 'parent_id'
+}
 
 
-def get_data(n):
+def edit(columns):
     """
-    :param int n: top n movies
+    Edit column names for inserting to db
 
-    :return: data frame contains movies information
-    :rtype: pd.DataFrame
+    :param list columns: column names from csv
+    :return: edited column names
+    :rtype: list
     """
-    old_ids = db.get_movie_ids()
-    df_ratings = pd.read_csv(PATH_RATINGS, sep='\t')
+    names = []
 
-    df = pd.DataFrame()
-    for chunk in pd.read_csv(PATH_BASICS, chunksize=50000, sep='\t'):
-        cond1 = ~chunk.titleType.isin(['video', 'videoGame', 'tvEpisode'])
-        cond2 = ~chunk.tconst.isin(old_ids)
-        cond3 = chunk.titleType.notnull()
-        filtered = chunk[cond1 & cond2 & cond3].merge(df_ratings, on='tconst')
-        df = pd.concat([df, filtered], sort=False)
+    for column in columns:
+        # to snake case
+        edited = re.sub(r'(?<!^)(?=[A-Z])', '_', column).lower()
 
-    # if set n to False, get all movies
-    if not n:
-        return df
+        # name mapping
+        if column in mapping.keys():
+            edited = mapping[column]
+        names.append(edited)
 
-    return generate_score(df)[:n]
+    return names
 
 
-def generate_score(df):
+def insert():
     """
-    Generate scores of movies
-
-    :param pd.DataFrame df: all movies
-    :return: data frame with scores
-    :rtype: pd.DataFrame
+    Insert to db
     """
-    df.loc[:, 'score'] = df['averageRating'] * df['numVotes']
-    return df.sort_values(by='score', ascending=False).drop('score', axis=1)
+    chunk_size = 50000
+
+    for table, path in path_config.items():
+        session = connect()
+        previous = factory.get_by_table_name(name=table)
+        counter = 1
+        logger.info(f'Reading data from csv for {table}')
+
+        # quoting=3: QUOTE_NONE
+        for chunk in pd.read_csv(
+                path,
+                chunksize=chunk_size,
+                sep='\t',
+                quoting=3
+        ):
+            chunk.columns = edit(chunk.columns)
+            chunk = chunk[~chunk.title_id.isin(previous)]
+
+            if len(chunk) == 0:
+                continue
+
+            args = {
+                'name': table,
+                'con': session.bind,
+                'if_exists': 'append',
+                'index': False
+            }
+            try:
+                chunk.replace('\\N', np.nan).to_sql(**args)
+            finally:
+                session.close()
+
+            total = counter * chunk_size
+            logger.info(f'{total} rows have been written to the {table}')
+            counter += 1
+
+        logger.info(f'Operation done for {table}')

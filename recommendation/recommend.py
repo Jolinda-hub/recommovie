@@ -3,16 +3,15 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.neighbors.kde import KernelDensity
 from sklearn.preprocessing import LabelEncoder
-from util import Util
+from util import *
 import numpy as np
 
-util = Util()
-config = util.get_params()
+config = get_params()
 
 
 class Recommendation:
     def __init__(self, df):
-        self.logger = util.set_logger('recommendation')
+        self.logger = set_logger('recommendation')
         self.matrix = None
         self.df = df
 
@@ -27,10 +26,10 @@ class Recommendation:
         le = LabelEncoder()
 
         # str to int with label encoder
-        self.df.loc[:, 'kind'] = le.fit_transform(self.df['kind'])
+        self.df.loc[:, 'title_type'] = le.fit_transform(self.df['title_type'])
 
         # drop null values
-        cols = ['num_votes', 'runtime', 'start_year', 'kind', 'genres']
+        cols = ['num_votes', 'runtime', 'start_year', 'title_type', 'genres']
         self.df = self.df.replace('', np.nan)
         self.df.dropna(subset=cols, inplace=True)
 
@@ -39,7 +38,7 @@ class Recommendation:
                 float(config['score']['num_votes']) * self.df['num_votes'] +
                 float(config['score']['runtime']) * self.df['runtime'] +
                 float(config['score']['year']) * self.df['start_year'] +
-                float(config['score']['kind']) * self.df['kind']
+                float(config['score']['title_type']) * self.df['title_type']
         )
 
         self.df.reset_index(drop=True, inplace=True)
@@ -96,9 +95,9 @@ class Recommendation:
         self.logger.info(f'Finding recommended films for id={movie_id}')
 
         # get index and cluster by selected movie
-        index = self.df[self.df.movie_id == movie_id].index[0]
-        cluster = self.df[self.df.movie_id == movie_id]['cluster'].iloc[0]
-        kind = self.df[self.df.movie_id == movie_id]['kind'].iloc[0]
+        index = self.df[self.df.title_id == movie_id].index[0]
+        cluster = self.df[self.df.title_id == movie_id]['cluster'].iloc[0]
+        kind = self.df[self.df.title_id == movie_id]['title_type'].iloc[0]
 
         # get similarity scores by genres
         kernel = linear_kernel(self.matrix[index], self.matrix)
@@ -110,9 +109,9 @@ class Recommendation:
 
         cond1 = (self.df.index.isin(indexes))
         cond2 = (self.df.cluster == cluster)
-        cond3 = (self.df.kind == kind)
+        cond3 = (self.df.title_type == kind)
 
         args = {'by': 'score', 'ascending': False}
         selected = self.df.loc[cond1 & cond2 & cond3].sort_values(**args)
 
-        return selected['movie_id'].tolist()[:12]
+        return selected['title_id'].tolist()[:12]

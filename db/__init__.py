@@ -8,5 +8,8 @@ def connect():
     :rtype: sqlalchemy.orm.session.Session
     """
     conn_args = {'check_same_thread': False}
-    engine = create_engine('sqlite:///recommendation.db', connect_args=conn_args)
+    engine = create_engine(
+        'sqlite:///recommendation.db',
+        connect_args=conn_args
+    )
     return sessionmaker(bind=engine)()

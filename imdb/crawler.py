@@ -1,6 +1,5 @@
 from bs4 import BeautifulSoup
-from imdb.data import get_data
-from util import Util
+from db.factory import Factory
 import json
 import multiprocessing as mp
 import pandas as pd
@@ -8,10 +7,8 @@ import requests
 import time
 import tqdm
 
-util = Util()
-
-logger = util.set_logger('crawler')
 BASE_PATH = ' http://www.imdb.com/title/'
+factory = Factory()
 
 
 def get_page(movie_id):
@@ -29,13 +26,13 @@ def get_page(movie_id):
 
 def parse(content):
     """
-    Get image url, description and trailer id
+    Get image url, description
 
     :param bs4.BeautifulSoup content: BeautifulSoup from html content
-    :return: image, description and trailer id
+    :return: image and description
     :rtype: tuple
     """
-    img = description = trailer_id = None
+    img = description = None
 
     attrs = {'type': 'application/ld+json'}
     full_info = content.find('script', attrs=attrs).text
@@ -45,10 +42,8 @@ def parse(content):
         img = info_dict['image']
     if 'description' in info_dict.keys():
         description = info_dict['description']
-    if 'trailer' in info_dict.keys():
-        trailer_id = info_dict['trailer']['embedUrl'].split('/')[3]
 
-    return img, description, trailer_id
+    return img, description
 
 
 def append(movie_id):
@@ -56,46 +51,19 @@ def append(movie_id):
     Create beautiful soup
 
     :param str movie_id: movie id like tt0000001
-    :return: image, description and trailer id
+    :return: image and description
     :rtype: tuple
     """
-    img = description = trailer_id = None
+    img = description = None
 
     try:
         resp = get_page(movie_id)
         soup = BeautifulSoup(resp, 'html.parser')
-        img, description, trailer_id = parse(soup)
-    except Exception as e:
-        logger.error(f'An error occurred: {e.args} for movie_id={movie_id}')
+        img, description = parse(soup)
+    except BaseException:
         time.sleep(10)
 
-    return movie_id, img, description, trailer_id
-
-
-def edit(df):
-    """
-    Map columns for db insert
-
-    :param pd.DataFrame df: data frame for renaming columns
-    :return: renamed-decoded data frame
-    :rtype: pd.DataFrame
-    """
-    column_maps = {
-        'tconst': 'movie_id',
-        'titleType': 'kind',
-        'primaryTitle': 'primary_title',
-        'originalTitle': 'title',
-        'isAdult': 'is_adult',
-        'startYear': 'start_year',
-        'endYear': 'end_year',
-        'runtimeMinutes': 'runtime',
-        'averageRating': 'average_rating',
-        'numVotes': 'num_votes',
-    }
-
-    replaced = df.replace('\\N', '')
-    renamed = replaced.rename(columns=column_maps)
-    return renamed
+    return movie_id, img, description
 
 
 def crawl(args):
@@ -106,17 +74,11 @@ def crawl(args):
     :return: movies
     :rtype: pd.DataFrame
     """
-    df = get_data(n=args['c'])
+    ids = factory.get_movie_ids()
 
     pool = mp.Pool(args['w'])
-    ids = df['tconst'].unique()
-
     records = list(tqdm.tqdm(pool.imap(append, ids), total=len(ids)))
     pool.close()
     pool.join()
 
-    columns = ['tconst', 'image_url', 'description', 'trailer_id']
-    df_img = pd.DataFrame(records, columns=columns)
-    df_all = df_img.merge(df, on='tconst')
-
-    return edit(df_all)
+    factory.save(records)

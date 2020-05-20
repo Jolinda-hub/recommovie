@@ -1,11 +1,10 @@
-from db.data_opt import DataOperation
+from db.factory import Factory
 from elasticsearch import Elasticsearch, helpers, exceptions
-from util import Util
+from util import get_params
 
-util = Util()
-db = DataOperation()
+factory = Factory()
 
-config = util.get_params()
+config = get_params()
 es = Elasticsearch(hosts=[{
     'host': config['elastic']['host'],
     'port': config['elastic']['port']
@@ -21,7 +20,7 @@ class Elastic:
         :return: difference between inserted and sent
         :rtype: int
         """
-        items = db.get_items()
+        items = factory.get_items()
 
         actions = []
 

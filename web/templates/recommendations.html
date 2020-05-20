@@ -19,13 +19,13 @@
                                         <a href="#"><img class="card-img-top" src={{ row.image_url }} alt=""></a>
                                         <div class="card-body">
                                             <h4 class="card-title">
-                                                <a href="/recommendations/{{ row.movie_id }}">{{ row.title }}</a>
+                                                <a href="/recommendations/{{ row.title_id }}">{{ row.original_title }}</a>
                                             </h4>
                                             <h5>{{ row.year }}</h5>
                                             <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>
                                         </div>
                                         <div class="card-footer">
-                                            <a class="image-url" href="https://www.imdb.com/title/{{ row.movie_id }}/">
+                                            <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
                                                 <img class="imdb" src="/img/imdb.png">
                                             </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>

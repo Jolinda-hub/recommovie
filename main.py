@@ -1,15 +1,14 @@
 from web.app import app
 from util.elastic import Elastic
-from util import Util
+from util import *
 
 
 def main():
-    util = Util()
     elastic = Elastic()
 
     # get config and set logger
-    config = util.get_params()
-    logger = util.set_logger('main')
+    config = get_params()
+    logger = set_logger('main')
 
     # create index in elastic search
     msg = elastic.create_index()

@@ -1,16 +1,12 @@
-from db.data_opt import DataOperation
-from imdb.crawler import crawl, util
+from imdb.crawler import crawl
+from imdb.data import insert
+from util import parse_arguments
 
 
 def main():
-    db = DataOperation()
-    arguments = util.parse_arguments()
-
-    # crawl movies
-    df_last = crawl(arguments).drop_duplicates(subset=['movie_id'])
-
-    # insert to db
-    db.insert(df_last)
+    arguments = parse_arguments()
+    insert()
+    crawl(arguments)
 
 
 if __name__ == '__main__':
