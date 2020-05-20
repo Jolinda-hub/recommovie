@@ -64,7 +64,10 @@ def insert():
                 quoting=3
         ):
             chunk.columns = edit(chunk.columns)
-            chunk = chunk[~chunk.title_id.isin(previous)]
+
+            cond1 = ~chunk.title_type.isin(['video', 'videoGame', 'tvEpisode'])
+            cond2 = ~chunk.title_id.isin(previous)
+            chunk = chunk[cond1 & cond2]
 
             if len(chunk) == 0:
                 continue
