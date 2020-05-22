@@ -2,6 +2,7 @@ from flask import Flask, request, render_template, send_from_directory, jsonify
 from db.factory import Factory
 from recommendation.recommend import Recommendation
 from util import get_params
+import pandas as pd
 import requests
 
 config = get_params()
@@ -11,7 +12,10 @@ app = Flask(__name__)
 app.secret_key = config['app']['secret']
 
 movie_df = factory.get_dataframe()
-recommend = Recommendation(movie_df)
+episode_df = factory.get_episodes()
+
+merged = movie_df.merge(episode_df, on='title_id', how='left')
+recommend = Recommendation(merged)
 
 
 @app.route('/css/<path:path>')
@@ -102,14 +106,20 @@ def suggest():
 @app.route('/recommendations/<movie_id>', methods=['GET'])
 def recommendations(movie_id=None):
     try:
-        condition = movie_df.title_id == movie_id
-        name = movie_df[condition]['original_title'].iloc[0]
+        # movie features
+        movie = merged[merged.title_id == movie_id].iloc[0]
+        name = movie['original_title']
+        ratings = movie['episode_ratings']
+        flag = False if pd.isnull(ratings) else True
+
+        # recommendations
         movie_ids = recommend.recommend(movie_id)
         items = movie_df[movie_df.title_id.isin(movie_ids)].itertuples()
 
         args = {
             'items': items,
             'original': name,
+            'flag': flag
         }
         return render_template('recommendations.html', **args)
     except:
@@ -118,16 +128,31 @@ def recommendations(movie_id=None):
 
 @app.route('/lucky', methods=['GET'])
 def lucky():
-    movie = movie_df.sample(1).iloc[0]
+    # movie features
+    movie = merged.sample(1).iloc[0]
+    name = movie['original_title']
+    ratings = movie['episode_ratings']
+    flag = False if pd.isnull(ratings) else True
+
+    # recommendations
     movie_ids = recommend.recommend(movie.title_id)
     items = movie_df[movie_df.title_id.isin(movie_ids)].itertuples()
 
     args = {
         'items': items,
-        'original': movie.original_title,
+        'original': name,
         'active': 2,
+        'flag': flag
     }
     return render_template('recommendations.html', **args)
+
+
+@app.route('/infocard/<movie_id>', methods=['GET'])
+def info_card(movie_id=None):
+    condition = movie_df.title_id == movie_id
+    movie = movie_df[condition].iloc[0]
+
+    return render_template('infocard.html', item=movie)
 
 
 @app.route('/ping', methods=['GET'])

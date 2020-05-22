@@ -1,7 +1,8 @@
 from sqlalchemy import (
-    Boolean, Column, Float, ForeignKey, Integer, String, Text
+    Boolean, cast, Column, Float, ForeignKey, Integer, String, Text
 )
 from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.orm import column_property
 from sqlalchemy import create_engine
 
 Base = declarative_base()
@@ -31,6 +32,12 @@ class Episode(Base):
     parent_id = Column('parent_id', String(9), ForeignKey('basics.title_id'))
     season_number = Column('season_number', Integer)
     episode_number = Column('episode_number', Integer)
+    info = column_property(
+        'S' +
+        cast(season_number, String) +
+        'E' +
+        cast(episode_number, String)
+    )
 
 
 class Rating(Base):

@@ -1,0 +1,42 @@
+{% extends "navbar.html" %}
+{% block style %}
+    <link href="/css/info-card.css?v=2" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    <div class="flip-card-container" style="--hue: 220">
+        <div class="flip-card">
+
+            <div class="card-front">
+                <figure>
+                    <div class="img-bg"></div>
+                    <img class="img-card" src={{ item.image_url }} alt={{ item.original_title }}>
+                    <figcaption>{{ item.original_title }}</figcaption>
+                </figure>
+            </div>
+
+            <div class="card-back">
+                <figure>
+                    <div class="img-bg"></div>
+                    <img class="img-card" src={{ item.image_url }} alt={{ item.original_title }}>
+                    <figcaption>{{ item.original_title }}</figcaption>
+                </figure>
+
+                <button>{{ item.original_title }}</button>
+
+                <div class="design-container">
+                    <span class="design design--1"></span>
+                    <span class="design design--2"></span>
+                    <span class="design design--3"></span>
+                    <span class="design design--4"></span>
+                    <span class="design design--5"></span>
+                    <span class="design design--6"></span>
+                    <span class="design design--7"></span>
+                    <span class="design design--8"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}
