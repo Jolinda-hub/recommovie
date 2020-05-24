@@ -1,12 +1,14 @@
 from flask import Flask, request, render_template, send_from_directory, jsonify
 from db.factory import Factory
 from recommendation.recommend import Recommendation
+from recommendation.trend import TrendDetection
 from util import get_params
 import pandas as pd
 import requests
 
 config = get_params()
 factory = Factory()
+detection = TrendDetection()
 
 app = Flask(__name__)
 app.secret_key = config['app']['secret']
@@ -149,10 +151,26 @@ def lucky():
 
 @app.route('/infocard/<movie_id>', methods=['GET'])
 def info_card(movie_id=None):
-    condition = movie_df.title_id == movie_id
-    movie = movie_df[condition].iloc[0]
+    condition = merged.title_id == movie_id
+    movie = merged[condition].iloc[0]
 
-    return render_template('infocard.html', item=movie)
+    episodes = movie.episode_ratings.split(',')
+    info = movie.episode_info.split(',')
+
+    ratings = list(map(float, episodes))
+    cluster, message = detection.assign_cluster(ratings, info)
+
+    args = {
+        'name': movie.original_title,
+        'image_url': movie.image_url,
+        'min': min(ratings),
+        'max': max(ratings),
+        'avg': round(sum(ratings) / len(ratings), 1),
+        'trend': cluster.replace('_', ' ').title(),
+        'message': message.capitalize()
+    }
+
+    return render_template('infocard.html', **args)
 
 
 @app.route('/ping', methods=['GET'])

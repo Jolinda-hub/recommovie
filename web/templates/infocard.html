@@ -1,6 +1,6 @@
 {% extends "navbar.html" %}
 {% block style %}
-    <link href="/css/info-card.css?v=2" rel="stylesheet"/>
+    <link href="/css/info-card.css?v=31" rel="stylesheet"/>
 {% endblock %}
 
 {% block content %}
@@ -10,19 +10,24 @@
             <div class="card-front">
                 <figure>
                     <div class="img-bg"></div>
-                    <img class="img-card" src={{ item.image_url }} alt={{ item.original_title }}>
-                    <figcaption>{{ item.original_title }}</figcaption>
+                    <img class="img-card-front" src={{ image_url }} alt={{ name }}>
+                    <figcaption>{{ name }}</figcaption>
                 </figure>
+                <ul class="card-ul">
+                    <li class="card-li">Maximum Rating: {{ max }}</li>
+                    <li class="card-li">Minimum Rating: {{ min }}</li>
+                    <li class="card-li">Average Rating: {{ avg }}</li>
+                    <li class="card-li">Trend: {{ trend }}</li>
+                    <li class="card-li">PS: {{ message }}</li>
+                </ul>
             </div>
 
             <div class="card-back">
                 <figure>
                     <div class="img-bg"></div>
-                    <img class="img-card" src={{ item.image_url }} alt={{ item.original_title }}>
-                    <figcaption>{{ item.original_title }}</figcaption>
+                    <img class="img-card-back" src={{ image_url }} alt={{ name }}>
+                    <figcaption>{{ name }}</figcaption>
                 </figure>
-
-                <button>{{ item.original_title }}</button>
 
                 <div class="design-container">
                     <span class="design design--1"></span>
