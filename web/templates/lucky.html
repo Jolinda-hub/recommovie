@@ -1,0 +1,46 @@
+{% extends "navbar.html" %}
+{% block style %}
+    <link href="/css/info-card.css?v=31" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    <div class="flip-card-container" style="--hue: 220">
+        <div class="flip-card">
+
+            <div class="card-front">
+                <figure>
+                    <div class="img-bg"></div>
+                    <img class="img-card-front" src="/img/question_mark.png" alt="" style="filter: blur(0px);">
+                </figure>
+            </div>
+
+            <div class="card-back">
+                <figure>
+                    <div class="img-bg"></div>
+                    <img class="img-card-back" style="filter: blur(10px);" src={{ image_url }} alt="{{ name }}">
+                    <figcaption>{{ name }}</figcaption>
+                </figure>
+
+                <ul class="card-ul">
+                    <li class="card-li">Name: {{ name }}</li>
+                    <li class="card-li">Average Rating: {{ avg_rating }}</li>
+                    <li class="card-li">Number of Votes: {{ '{:,}'.format(num_votes) }}</li>
+                    <li class="card-li">Genres: {{ genres }}</li>
+                </ul>
+
+                <div class="design-container">
+                    <span class="design design--1"></span>
+                    <span class="design design--2"></span>
+                    <span class="design design--3"></span>
+                    <span class="design design--4"></span>
+                    <span class="design design--5"></span>
+                    <span class="design design--6"></span>
+                    <span class="design design--7"></span>
+                    <span class="design design--8"></span>
+                </div>
+            </div>
+
+        </div>
+    </div>
+
+{% endblock %}

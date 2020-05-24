@@ -4,6 +4,7 @@ from recommendation.recommend import Recommendation
 from recommendation.trend import TrendDetection
 from util import get_params
 import pandas as pd
+import random
 import requests
 
 config = get_params()
@@ -130,23 +131,23 @@ def recommendations(movie_id=None):
 
 @app.route('/lucky', methods=['GET'])
 def lucky():
-    # movie features
-    movie = merged.sample(1).iloc[0]
-    name = movie['original_title']
-    ratings = movie['episode_ratings']
-    flag = False if pd.isnull(ratings) else True
-
-    # recommendations
-    movie_ids = recommend.recommend(movie.title_id)
-    items = movie_df[movie_df.title_id.isin(movie_ids)].itertuples()
+    # random choice by weights
+    filtered = merged[merged.image_url.notnull()]
+    title_id = random.choices(
+        filtered.title_id.tolist(),
+        filtered.num_votes.tolist()
+    )[0]
+    movie = filtered[filtered.title_id == title_id].iloc[0]
 
     args = {
-        'items': items,
-        'original': name,
-        'active': 2,
-        'flag': flag
+        'name': movie['original_title'],
+        'image_url': movie['image_url'],
+        'avg_rating': movie['average_rating'],
+        'num_votes': movie['num_votes'],
+        'genres': movie['genres'],
+        'active': 2
     }
-    return render_template('recommendations.html', **args)
+    return render_template('lucky.html', **args)
 
 
 @app.route('/infocard/<movie_id>', methods=['GET'])

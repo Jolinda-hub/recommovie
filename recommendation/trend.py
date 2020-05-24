@@ -15,7 +15,7 @@ class TrendDetection:
                 'dir': 'Almost every episode is better than the previous one.'
             },
             'stable': {
-                'sentence': 'same rating in almost every episode.'
+                'dir': 'same rating in almost every episode.'
             }
         }
 
