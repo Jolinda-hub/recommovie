@@ -65,8 +65,11 @@ def insert():
         ):
             chunk.columns = edit(chunk.columns)
 
-            cond1 = ~chunk.title_type.isin(['video', 'videoGame', 'tvEpisode'])
+            titles = ['video', 'videoGame', 'tvEpisode']
+            cond1 = ~chunk.title_type.isin(titles) \
+                if table == 'basics' else True
             cond2 = ~chunk.title_id.isin(previous)
+
             chunk = chunk[cond1 & cond2]
 
             if len(chunk) == 0:
