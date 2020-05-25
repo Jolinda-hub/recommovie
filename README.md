@@ -33,6 +33,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
     ```bash
     $  wget https://datasets.imdbws.com/title.basics.tsv.gz -P imdb/data/
     $  wget https://datasets.imdbws.com/title.ratings.tsv.gz -P imdb/data/
+    $  wget https://datasets.imdbws.com/title.episode.tsv.gz -P imdb/data/
     ```
     
 2.  Run the code for creating db only once:
