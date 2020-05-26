@@ -53,7 +53,7 @@ def insert():
     for table, path in path_config.items():
         session = connect()
         previous = factory.get_by_table_name(name=table)
-        counter = 1
+        counter = 0
         logger.info(f'Reading data from csv for {table}')
 
         # quoting=3: QUOTE_NONE
@@ -75,6 +75,8 @@ def insert():
             if len(chunk) == 0:
                 continue
 
+            counter += len(chunk)
+
             args = {
                 'name': table,
                 'con': session.bind,
@@ -86,8 +88,6 @@ def insert():
             finally:
                 session.close()
 
-            total = counter * chunk_size
-            logger.info(f'{total} rows have been written to the {table}')
-            counter += 1
+            logger.info(f'{counter} rows have been written to the {table}')
 
         logger.info(f'Operation done for {table}')
