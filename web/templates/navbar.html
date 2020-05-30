@@ -11,13 +11,13 @@
                     aria-controls="navbarResponsive" aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <form class="form-inline" action="javascript:">
-                <input class="form-control mr-sm-2" type="search" placeholder="Search"
-                       aria-label="Search" name="info"
-                       id="selector">
-            </form>
 
             <div class="collapse navbar-collapse" id="navbarResponsive">
+                <form class="form-inline my-2 my-lg-0 col-xs-6" action="javascript:">
+                    <input class="form-control mr-sm-2" type="search" placeholder="Search"
+                           aria-label="Search" name="info"
+                           id="selector">
+                </form>
                 <ul class="navbar-nav ml-auto">
                     <li class="nav-item {% if active is not none and active == 1 %}active{% endif %}">
                         <a class="nav-link" href="/">Home</a>
