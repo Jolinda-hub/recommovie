@@ -5,6 +5,7 @@ from sklearn.neighbors.kde import KernelDensity
 from sklearn.preprocessing import LabelEncoder
 from util import *
 import numpy as np
+import random
 
 config = get_params()
 
@@ -13,11 +14,33 @@ class Recommendation:
     def __init__(self, df):
         self.logger = set_logger('recommendation')
         self.matrix = None
+        self.random_array = None
         self.df = df
 
         self.preproccessing()
         self.clustering()
         self.create_matrix()
+        self.create_array()
+
+    def create_array(self):
+        """
+        Create array for random selection
+        """
+        filtered = self.df[self.df.image_url.notnull()]
+        self.random_array = np.array(filtered[['title_id', 'num_votes']])
+
+    def get_random(self):
+        """
+        Get movie by weighted random
+
+        :return: random movie
+        :rtype: pd.Series
+        """
+        title_id = random.choices(
+            self.random_array[:, 0],
+            self.random_array[:, 1]
+        )[0]
+        return self.df[self.df.title_id == title_id].iloc[0]
 
     def preproccessing(self):
         """
@@ -72,9 +95,6 @@ class Recommendation:
     def create_matrix(self):
         """
         Create matrix with tf-idf vectorizer
-
-        :return: list of vectors
-        :rtype: numpy.array
         """
         self.logger.info('Creating matrix from words')
 

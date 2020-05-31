@@ -4,7 +4,6 @@ from recommendation.recommend import Recommendation
 from recommendation.trend import TrendDetection
 from util import get_params
 import pandas as pd
-import random
 import requests
 
 config = get_params()
@@ -132,12 +131,7 @@ def recommendations(movie_id=None):
 @app.route('/lucky', methods=['GET'])
 def lucky():
     # random choice by weights
-    filtered = merged[merged.image_url.notnull()]
-    title_id = random.choices(
-        filtered.title_id.tolist(),
-        filtered.num_votes.tolist()
-    )[0]
-    movie = filtered[filtered.title_id == title_id].iloc[0]
+    movie = recommend.get_random()
 
     args = {
         'name': movie['original_title'],
