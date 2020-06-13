@@ -1,10 +1,12 @@
 from db.factory import Factory
 from elasticsearch import Elasticsearch, helpers, exceptions
-from util import get_params
+from util import *
+import json
 
 factory = Factory()
-
 config = get_params()
+logger = set_logger('elastic')
+
 es = Elasticsearch(hosts=[{
     'host': config['elastic']['host'],
     'port': config['elastic']['port']
@@ -12,8 +14,62 @@ es = Elasticsearch(hosts=[{
 
 
 class Elastic:
-    @staticmethod
-    def insert_elastic():
+    INDEX = config['elastic']['index']
+    TYPE = config['elastic']['type']
+
+    def search(self, movie_id):
+        """
+        Autocomplete for movies
+
+        :param str movie_id: movie id
+        :return: movies
+        :rtype: dict
+        """
+        message = {'status': False}
+        query = {
+            'suggest': {
+                'movie': {
+                    'prefix': movie_id,
+                    'completion': {
+                        'field': 'name',
+                        'size': 10
+                    }
+                }
+            }
+        }
+        # if status code is not equal to 200
+        try:
+            response = es.search(
+                index=self.INDEX,
+                doc_type=self.TYPE,
+                body=query
+            )
+        except BaseException:
+            return json.dumps(message)
+
+        options = response['suggest']['movie'][0]['options']
+
+        if response['timed_out'] or len(options) == 0:
+            return json.dumps(message)
+
+        # similar movie names and movies year
+        movies = []
+
+        for item in options:
+            source = item['_source']
+            data = {
+                'id': item['_id'],
+                'text': ' '.join(source['name']['input']),
+                'value': source['year'],
+            }
+            movies.append(data)
+
+        message['status'] = True
+        message['movies'] = movies[:10]
+
+        return json.dumps(message)
+
+    def insert_elastic(self):
         """
         Insert records to elastic
 
@@ -26,8 +82,8 @@ class Elastic:
 
         for item in items:
             action = {
-                '_index': f"{config['elastic']['index']}",
-                '_type': f"{config['elastic']['type']}",
+                '_index': self.INDEX,
+                '_type': self.TYPE,
                 '_id': item[0],
                 '_source': {
                     'name': {
@@ -40,7 +96,10 @@ class Elastic:
             actions.append(action)
 
         response = helpers.bulk(es, actions)
-        return len(items) - response[0]
+        warnings = len(items) - response[0]
+
+        if warnings > 0:
+            logger.warn(f'An error occurred for {warnings} items')
 
     @staticmethod
     def create_index():
@@ -70,7 +129,6 @@ class Elastic:
                 }
             }
         }
-        message = None
 
         try:
             es.indices.create(
@@ -79,6 +137,7 @@ class Elastic:
             )
         except exceptions.RequestError as e:
             if not e.args[1] == 'resource_already_exists_exception':
-                message = e.args
+                logger.warn(f'Index already exists')
+                return
 
-        return message
+            logger.exception(e.args)

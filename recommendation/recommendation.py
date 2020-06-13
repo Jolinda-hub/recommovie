@@ -1,3 +1,4 @@
+from db.factory import Factory
 from scipy.signal import argrelextrema
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
@@ -8,19 +9,54 @@ import numpy as np
 import random
 
 config = get_params()
+factory = Factory()
 
 
 class Recommendation:
-    def __init__(self, df):
+    def __init__(self):
+        self.movie_df = factory.get_dataframe()
+        self.episode_df = factory.get_episodes()
+        self.df = None
+
         self.logger = set_logger('recommendation')
         self.matrix = None
         self.random_array = None
-        self.df = df
 
+        self.create_df()
         self.preproccessing()
         self.clustering()
         self.create_matrix()
         self.create_array()
+
+    def get_by_ids(self, movie_ids):
+        """
+        Get by id
+
+        :param str or list movie_ids: movie ids
+        :return: pd.Series
+        """
+        if isinstance(movie_ids, str):
+            return self.df[self.df.title_id == movie_ids].iloc[0]
+
+        return self.df[self.df.title_id.isin(movie_ids)].itertuples()
+
+    def get_by_n(self, n=8):
+        """
+        Get first n movies
+
+        :param int n: how many movies
+        :return: first n movies
+        """
+        return self.movie_df.head(n).itertuples()
+
+    def create_df(self):
+        """
+        Create movie data frame
+        """
+        self.df = self.movie_df.merge(
+            self.episode_df,
+            on='title_id', how='left'
+        )
 
     def create_array(self):
         """
@@ -134,4 +170,4 @@ class Recommendation:
         args = {'by': 'score', 'ascending': False}
         selected = self.df.loc[cond1 & cond2 & cond3].sort_values(**args)
 
-        return selected['title_id'].tolist()[:12]
+        return self.get_by_ids(selected['title_id'].tolist()[:12])

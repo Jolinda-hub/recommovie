@@ -21,7 +21,7 @@ def main():
 
     # crawl movies and add to elastic
     crawl()
-    _ = elastic.insert_elastic()
+    elastic.insert_elastic()
 
     # remove files
     os.remove(f"{config['crawler']['path']}/title.basics.tsv.gz")
