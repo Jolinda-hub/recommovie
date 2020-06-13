@@ -22,4 +22,4 @@ RUN pip3 install -r requirements.txt
 EXPOSE 5002
 
 # run code
-ENTRYPOINT python3 main.py config.ini
+ENTRYPOINT python3 app.py config.ini

@@ -65,7 +65,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 2.  Run the code for app:
 
     ```bash
-    $  python3 main.py config.ini
+    $  python3 app.py config.ini
     ```
 
 **PS:** Change the host of elasticsearch, from *elastic* to *localhost*
