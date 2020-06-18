@@ -181,3 +181,24 @@ td {
     line-height: 25px;
     display: inline-block;
 }
+
+.empty-heart {
+    float: right;
+    width: 20px;
+    height: 20px;
+    background: url("/static/img/empty.svg");
+    background-size: 100% 100%;
+}
+
+.filled-heart {
+    float: right;
+    width: 20px;
+    height: 20px;
+    background: url("/static/img/favorited.svg");
+    background-size: 100% 100%;
+}
+
+.empty-heart:hover,
+.empty-heart:focus {
+  background-image: url("/static/img/half.svg");
+}

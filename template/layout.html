@@ -8,13 +8,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
 
-    <title>Recommovie</title>
+    <title>{{ title if title else 'Recommovie' }}</title>
     <link rel="icon" href="/static/img/favicon.ico" type="image/x-icon">
     <link href="/static/css/bootstrap.min.css" rel="stylesheet"/>
     <link href="/static/css/shop-homepage.css" rel="stylesheet"/>
     <link href="/static/css/typeahead.css" rel="stylesheet"/>
     <link href="/static/css/base.css?v=4" rel="stylesheet"/>
-	<link href="https://fonts.googleapis.com/css?family=Montserrat:300,700" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css?family=Montserrat:300,700" rel="stylesheet">
 
     {% block style %}{% endblock %}
 </head>

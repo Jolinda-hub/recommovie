@@ -2,8 +2,9 @@ from web import app
 from web.home import home
 from web.info import info
 from web.rec import rec_page
+from web.user import auth
 from util.elastic import Elastic
-from util import *
+from util import get_params
 
 
 def main():
@@ -18,6 +19,7 @@ def main():
     app.register_blueprint(home, url_prefix='/')
     app.register_blueprint(rec_page, url_prefix='/recommendations')
     app.register_blueprint(info, url_prefix='/infocard')
+    app.register_blueprint(auth, url_prefix='/user')
 
     # run web app
     port = config['app'].getint('port')

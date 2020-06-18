@@ -1,12 +1,12 @@
 from db import connect
-from db.factory import Factory
-from util import *
+from db.factory import TableFactory
+from util import get_params, set_logger
 import numpy as np
 import pandas as pd
 import re
 
 config = get_params()
-factory = Factory()
+tf = TableFactory()
 logger = set_logger('imdb data')
 
 path_config = {
@@ -52,7 +52,7 @@ def insert():
 
     for table, path in path_config.items():
         session = connect()
-        previous = factory.get_by_table_name(name=table)
+        previous = tf.get_by_table_name(name=table)
         counter = 0
         logger.info(f'Reading data from csv for {table}')
 

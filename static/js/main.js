@@ -38,3 +38,30 @@ $("#selector").typeahead({
     window.location.href = `/recommendations/${suggestion.id.toString()}`;
     ev.preventDefault();
 });
+
+
+$('.empty-heart').click(function () {
+    $(this).toggleClass('filled-heart');
+
+    const userId = $(this).attr('data-id');
+    const titleId = $(this).attr('data-movie');
+    const className = $(this).attr('class');
+
+    if (className.indexOf('filled-heart') > -1) {
+        $.ajax({
+            url: '/user/save',
+            data: {
+                'user_id': userId,
+                'title_id': titleId,
+            }
+        })
+    } else {
+        $.ajax({
+            url: '/user/remove',
+            data: {
+                'user_id': userId,
+                'title_id': titleId,
+            }
+        })
+    }
+});

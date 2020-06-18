@@ -50,10 +50,25 @@
                                             <p class="card-text">{{ row.description[0: 100].capitalize() }}</p>
                                         </div>
                                         <div class="card-footer">
-                                           <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
-                                               <img class="imdb" src="/static/img/imdb.png">
-                                           </a>
+                                            <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
+                                                <img class="imdb" src="/static/img/imdb.png">
+                                            </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>
+                                            {% if session['id'] %}
+                                                {% if row.title_id in session['decisions'] %}
+                                                    <a href="javascript:void(0)">
+                                                        <i class="empty-heart filled-heart"
+                                                           data-id={{ session['id'] }} data-movie={{ row.title_id }}
+                                                           onclick=""></i>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="javascript:void(0)">
+                                                        <i class="empty-heart"
+                                                           data-id={{ session['id'] }} data-movie={{ row.title_id }}
+                                                           onclick=""></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
                                         </div>
                                     </div>
                                 </div>

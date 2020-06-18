@@ -1,0 +1,44 @@
+{% extends "navbar.html" %}
+
+{% block style %}
+    <link href="/static/css/login.css?v=7" rel="stylesheet"/>
+{% endblock %}
+
+{% block content %}
+    <div class="login-page">
+        <div class="form-user">
+            <div class="h5 pt-2">
+                {% if errors %}
+                    {% if errors|length > 1 %}
+                        {% for error in errors %}
+                            <li style="font-size: 15px;">{{ error }}</li>
+                        {% endfor %}
+                    {% else %}
+                        {{ errors[0] }}
+                    {% endif %}
+                {% elif error %}
+                    {{ error }}
+                {% endif %}
+            </div>
+            <br>
+            <form class="register-form user" action="/user/signup" method="post">
+                <input type="text" placeholder="name" name="name">
+                <input type="email" placeholder="email address" name="email"/>
+                <input type="password" placeholder="password" name="password"/>
+                <input type="password" placeholder="confirm password" name="confirm"/>
+                <button>create</button>
+                <p class="message">Already registered? <a href="#">Sign In</a></p>
+            </form>
+            <form class="login-form user" action="/user/login" method="post">
+                <input type="email" placeholder="email" name="email"/>
+                <input type="password" placeholder="password" name="password"/>
+                <button>login</button>
+                <p class="message">Not registered? <a href="#">Create an account</a></p>
+            </form>
+        </div>
+    </div>
+{% endblock %}
+
+{% block script %}
+    <script src="/static/js/login.js"></script>
+{% endblock %}

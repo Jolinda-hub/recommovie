@@ -8,3 +8,4 @@ app = Flask(
     static_url_path='/static'
 )
 app.secret_key = config['app']['secret']
+app.config['WTF_CSRF_ENABLED'] = False

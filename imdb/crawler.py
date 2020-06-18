@@ -1,14 +1,14 @@
 from bs4 import BeautifulSoup
-from db.factory import Factory
+from db.factory import BasicFactory
+from db.model import Basic
 import json
 import multiprocessing as mp
-import pandas as pd
 import requests
 import time
 import tqdm
 
 BASE_PATH = ' http://www.imdb.com/title/'
-factory = Factory()
+bf = BasicFactory()
 
 
 def get_page(movie_id):
@@ -74,11 +74,21 @@ def crawl(args):
     :return: movies
     :rtype: pd.DataFrame
     """
-    ids = factory.get_movie_ids()
+    ids = bf.get_movie_ids()
 
     pool = mp.Pool(args['w'])
     records = list(tqdm.tqdm(pool.imap(append, ids), total=len(ids)))
     pool.close()
     pool.join()
 
-    factory.save(records)
+    instances = []
+    for record in records:
+        instance = Basic(
+            title_id=record[0],
+            image_url=record[1],
+            description=record[2],
+            is_crawled=True
+        )
+        instances.append(instance)
+
+    bf.save(instances)

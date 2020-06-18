@@ -24,5 +24,5 @@ def recommendations(movie_id=None):
             'flag': flag
         }
         return render_template('recommendations.html', **args)
-    except:
+    except BaseException:
         return render_template('error.html')

@@ -1,21 +1,22 @@
-from db.factory import Factory
+from db.factory import BasicFactory, EpisodeFactory
 from scipy.signal import argrelextrema
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.neighbors.kde import KernelDensity
 from sklearn.preprocessing import LabelEncoder
-from util import *
+from util import get_params, set_logger
 import numpy as np
 import random
 
 config = get_params()
-factory = Factory()
+bf = BasicFactory()
+ef = EpisodeFactory()
 
 
 class Recommendation:
     def __init__(self):
-        self.movie_df = factory.get_dataframe()
-        self.episode_df = factory.get_episodes()
+        self.movie_df = bf.get_dataframe()
+        self.episode_df = ef.get_episodes()
         self.df = None
 
         self.logger = set_logger('recommendation')

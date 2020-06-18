@@ -1,9 +1,9 @@
-from db.factory import Factory
+from db.factory import BasicFactory
 from elasticsearch import Elasticsearch, helpers, exceptions
-from util import *
+from util import get_params, set_logger
 import json
 
-factory = Factory()
+bf = BasicFactory()
 config = get_params()
 logger = set_logger('elastic')
 
@@ -76,7 +76,7 @@ class Elastic:
         :return: difference between inserted and sent
         :rtype: int
         """
-        items = factory.get_items()
+        items = bf.get_items()
 
         actions = []
 
@@ -137,7 +137,7 @@ class Elastic:
             )
         except exceptions.RequestError as e:
             if not e.args[1] == 'resource_already_exists_exception':
-                logger.warn(f'Index already exists')
+                logger.warn('Index already exists')
                 return
 
             logger.exception(e.args)
