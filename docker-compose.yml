@@ -12,7 +12,7 @@ services:
       - mynetwork
 
   elasticsearch:
-    image: 'bitnami/elasticsearch:6'
+    image: 'bitnami/elasticsearch:7.7.1'
     container_name: elastic
     ports:
       - '9200:9200'

@@ -28,7 +28,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 3.  Lastly, check **localhost:5002**
 
 ### Option 2: Crawl another movies
-1. Download IMDB datasets:
+1. Download IMDB data sets:
  
     ```bash
     $  wget https://datasets.imdbws.com/title.basics.tsv.gz -P imdb/data/
@@ -39,7 +39,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 2.  Run the code for creating db only once:
 
     ```bash
-    $  python3 db/models.py
+    $  python3 migrate.py config.ini
     ```
     
 3.  Run the code for crawler:
@@ -56,10 +56,10 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
 1. Download and install elasticsearch:
  
     ```bash
-    $  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-6.6.1.tar.gz
-    $  tar -xf elasticsearch-6.6.1.tar.gz
-    $  cd elasticsearch-6.6.1
-    $  ./bin/elastichsearch
+    $  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-darwin-x86_64.tar.gz
+    $  tar -xf elasticsearch-7.1.1-darwin-x86_64.tar.gz
+    $  cd elasticsearch-7.1.1-darwin-x86_64.tar.gz
+    $  ./bin/elasticsearch
     ```
     
 2.  Run the code for app:
