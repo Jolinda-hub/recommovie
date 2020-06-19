@@ -34,10 +34,26 @@
                                             {% if flag %}
                                                 <span style="float: right; font-size:15px;">
                                                     <a href="/infocard/{{ row.title_id }}" target="_blank">
-                                                        infocard &#187;
+                                                        <i class="info"></i>
                                                     </a>
                                                 </span>
                                             {% endif %}
+                                            {% if session['id'] %}
+                                                {% if row.title_id in session['decisions'] %}
+                                                    <a href="javascript:void(0)">
+                                                        <i class="empty-heart filled-heart"
+                                                           data-id={{ session['id'] }} data-movie={{ row.title_id }}
+                                                           onclick=""></i>
+                                                    </a>
+                                                {% else %}
+                                                    <a href="javascript:void(0)">
+                                                        <i class="empty-heart"
+                                                           data-id={{ session['id'] }} data-movie={{ row.title_id }}
+                                                           onclick=""></i>
+                                                    </a>
+                                                {% endif %}
+                                            {% endif %}
+
                                         </div>
                                     </div>
                                 </div>

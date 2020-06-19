@@ -243,3 +243,12 @@ td {
         display: none;
     }
 }
+
+.info {
+    float: right;
+    width: 20px;
+    height: 20px;
+    background: url("/static/img/info.svg");
+    background-size: 100% 100%;
+    margin-left: 5px;
+}
