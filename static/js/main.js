@@ -2,7 +2,7 @@ var tags = new Bloodhound({
     datumTokenizer: Bloodhound.tokenizers.whitespace,
     queryTokenizer: Bloodhound.tokenizers.whitespace,
     remote: {
-        url: '/suggest?movie_id=%QUERY',
+        url: '/suggest?name=%QUERY',
         wildcard: '%QUERY',
         filter: function (response) {
             if (!response.status) {

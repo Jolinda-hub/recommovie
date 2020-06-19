@@ -1,0 +1,18 @@
+{% extends "layout.html" %}
+
+{% block content %}
+    <body>
+    <div id="notfound">
+        <div class="notfound">
+            <div class="notfound-404">
+                <img src="/static/img/ticket.png" class="ticket" alt="">
+                <div class="ticket-text text-row">{{ 'ABCDEFGHJKLMN' | list | random }}</div>
+                <div class="ticket-text text-seat">{{ range(1, 21) | random }}</div>
+            </div>
+            <h2>Congrats!</h2>
+            <p>Registration successfully completed.<br>You now have a ticket for Recommovie.</p>
+            <a href="/user/login">Sign In</a>
+        </div>
+    </div>
+    </body>
+{% endblock %}

@@ -81,14 +81,13 @@ td {
 }
 
 #notfound {
-    position: relative;
     height: 100vh;
 }
 
 #notfound .notfound {
     position: absolute;
     left: 50%;
-    top: 50%;
+    top: 40%;
     -webkit-transform: translate(-50%, -50%);
     -ms-transform: translate(-50%, -50%);
     transform: translate(-50%, -50%);
@@ -109,7 +108,7 @@ td {
     font-family: 'Montserrat', sans-serif;
     font-size: 146px;
     font-weight: 700;
-    margin: 0px;
+    margin: 0;
     color: #232323;
 }
 
@@ -117,7 +116,7 @@ td {
     display: inline-block;
     width: 120px;
     height: 125px;
-    background-image: url('../img/emoji.png');
+    background-image: url('/static/img/emoji.png');
     background-size: cover;
     -webkit-transform: scale(1.4);
     -ms-transform: scale(1.4);
@@ -136,7 +135,7 @@ td {
 
 .notfound p {
     font-family: 'Montserrat', sans-serif;
-    color: #787878;
+    color: #000000;
     font-weight: 300;
 }
 
@@ -145,7 +144,7 @@ td {
     display: inline-block;
     padding: 12px 30px;
     font-weight: 700;
-    background-color: #f99827;
+    background-color: #ce0815;
     color: #fff;
     border-radius: 40px;
     text-decoration: none;
@@ -200,5 +199,47 @@ td {
 
 .empty-heart:hover,
 .empty-heart:focus {
-  background-image: url("/static/img/half.svg");
+    background-image: url("/static/img/half.svg");
+}
+
+.ticket {
+    width: 350px;
+    height: 175px;
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    margin-top: 100px;
+}
+
+@media only screen and (max-width: 767px) {
+    .ticket {
+        width: 250px;
+        height: 125px;
+    }
+}
+
+.notfound .ticket-text {
+    font-weight: bold;
+    font-size: 14px;
+    position: absolute;
+    bottom: 185px;
+    width: 60%;
+}
+
+.notfound .text-row {
+    right: 188px;
+}
+
+.notfound .text-seat {
+    right: 134px;
+}
+
+@media only screen and (max-width: 767px) {
+    .notfound .text-row {
+        display: none;
+    }
+
+    .notfound .text-seat {
+        display: none;
+    }
 }

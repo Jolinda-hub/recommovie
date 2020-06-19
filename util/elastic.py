@@ -15,13 +15,12 @@ es = Elasticsearch(hosts=[{
 
 class Elastic:
     INDEX = config['elastic']['index']
-    TYPE = config['elastic']['type']
 
-    def search(self, movie_id):
+    def search(self, name):
         """
         Autocomplete for movies
 
-        :param str movie_id: movie id
+        :param str name: prefix from search
         :return: movies
         :rtype: dict
         """
@@ -29,7 +28,7 @@ class Elastic:
         query = {
             'suggest': {
                 'movie': {
-                    'prefix': movie_id,
+                    'prefix': name,
                     'completion': {
                         'field': 'name',
                         'size': 10
@@ -41,7 +40,6 @@ class Elastic:
         try:
             response = es.search(
                 index=self.INDEX,
-                doc_type=self.TYPE,
                 body=query
             )
         except BaseException:
@@ -83,7 +81,6 @@ class Elastic:
         for item in items:
             action = {
                 '_index': self.INDEX,
-                '_type': self.TYPE,
                 '_id': item[0],
                 '_source': {
                     'name': {
@@ -110,21 +107,20 @@ class Elastic:
         :rtype: bool
         """
         request_body = {
-            'setting': {
+            'settings': {
                 'number_of_shards': 3,
-                'number_of_replicas': 1,
+                'number_of_replicas': 1
             },
             'mappings': {
-                'movies': {
-                    'properties': {
-                        'name': {
-                            'type': 'completion',
-                            'preserve_separators': False,
-                            'preserve_position_increments': False,
-                        },
-                        'year': {
-                            'type': 'keyword',
-                        }
+                'properties': {
+                    'name': {
+                        'type': 'completion',
+                        'preserve_separators': False,
+                        'preserve_position_increments': False
+                    },
+                    'year': {
+                        'type': 'integer',
+                        'index': False
                     }
                 }
             }

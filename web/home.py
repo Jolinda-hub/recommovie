@@ -1,11 +1,25 @@
-from flask import Blueprint, render_template
+from util.elastic import Elastic
+from flask import Blueprint, render_template, request
 from recommendation import rec
 from web import app
 
 home = Blueprint('home', app.name)
 
 
-@home.route('/', methods=['GET'])
+@home.route('/suggest')
+def suggest():
+    """
+    Suggestions for autocomplete
+    """
+    # get text from search form in home page
+    es = Elastic()
+    name = request.args.get('name')
+
+    # search in elastic
+    return es.search(name)
+
+
+@home.route('/')
 def index():
     """
     Get homepage
@@ -17,7 +31,7 @@ def index():
     return render_template('index.html', **args)
 
 
-@home.route('/lucky', methods=['GET'])
+@home.route('/lucky')
 def lucky():
     """
     Get lucky page
@@ -36,7 +50,7 @@ def lucky():
     return render_template('lucky.html', **args)
 
 
-@home.route('/ping', methods=['GET'])
+@home.route('/ping')
 def ping():
     """
     System control

@@ -49,7 +49,7 @@ def post_signup():
         instance.set_password(form.password.data)
 
         uf.save(instance)
-        return redirect('/')
+        return render_template('thanks.html')
 
     if len(form.errors) > 0:
         params['errors'] = [x[0] for x in form.errors.values()]

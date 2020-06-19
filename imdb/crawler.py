@@ -74,7 +74,7 @@ def crawl(args):
     :return: movies
     :rtype: pd.DataFrame
     """
-    ids = bf.get_movie_ids()
+    ids = bf.get_title_ids()
 
     pool = mp.Pool(args['w'])
     records = list(tqdm.tqdm(pool.imap(append, ids), total=len(ids)))

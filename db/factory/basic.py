@@ -7,7 +7,7 @@ class BasicFactory:
     def __init__(self):
         self.ignore = ['video', 'videoGame', 'tvEpisode']
 
-    def get_movie_ids(self, n=None):
+    def get_title_ids(self, n=None):
         """
         Get movie ids
 
