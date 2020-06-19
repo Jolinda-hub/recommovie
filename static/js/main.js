@@ -65,3 +65,15 @@ $('.empty-heart').click(function () {
         })
     }
 });
+
+$(document).ready(function () {
+    let toggle = 1;
+    $('.flip-card').click(function () {
+        toggle++;
+        if ((toggle % 2) === 0) {
+            $('.flip-card').css({'transform': 'rotateY(180deg)'});
+        } else {
+            $('.flip-card').css({'transform': 'rotateY(0deg)'});
+        }
+    })
+});
