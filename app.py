@@ -1,6 +1,7 @@
 from web import app
 from web.home import home
 from web.info import info
+from web.policy import policy
 from web.rec import rec_page
 from web.user import auth
 from util.elastic import Elastic
@@ -15,11 +16,12 @@ def main():
     elastic.create_index()
     elastic.insert_elastic()
 
-    # register
+    # register blueprint
     app.register_blueprint(home, url_prefix='/')
     app.register_blueprint(rec_page, url_prefix='/recommendations')
     app.register_blueprint(info, url_prefix='/infocard')
     app.register_blueprint(auth, url_prefix='/user')
+    app.register_blueprint(policy, url_prefix='/policy')
 
     # run web app
     port = config['app'].getint('port')
