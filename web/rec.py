@@ -1,5 +1,4 @@
 from flask import Blueprint, render_template
-from pandas import isnull
 from recommendation import rec
 from web import app
 

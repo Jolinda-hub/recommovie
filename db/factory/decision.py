@@ -15,8 +15,16 @@ class DecisionFactory:
         """
         session = connect()
 
+        columns = [
+            Decision,
+            Basic.title_id,
+            Basic.title_type,
+            Basic.description,
+            Basic.image_url
+        ]
+
         query = session \
-            .query(Decision, Basic.title_type) \
+            .query(*columns) \
             .join(Basic, Decision.title_id == Basic.title_id) \
             .filter(Decision.user_id == user_id)
 

@@ -46,6 +46,7 @@ $('.empty-heart').click(function () {
     const userId = $(this).attr('data-id');
     const titleId = $(this).attr('data-movie');
     const className = $(this).attr('class');
+    const flag = $(this).attr('data-flag');
 
     if (className.indexOf('filled-heart') > -1) {
         $.ajax({
@@ -56,6 +57,10 @@ $('.empty-heart').click(function () {
             }
         })
     } else {
+        if (flag === 'True') {
+            $('#' + titleId).parent().remove();
+        }
+
         $.ajax({
             url: '/user/remove',
             data: {

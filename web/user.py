@@ -191,7 +191,8 @@ def get_favorites():
         args = {
             'header': 'Favorites by',
             'items': favorites,
-            'original': session['name']
+            'original': session['name'],
+            'flag': True
         }
         return render_template('recommendations.html', **args)
     except BaseException:

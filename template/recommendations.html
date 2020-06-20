@@ -15,7 +15,7 @@
                         <div class="row mt-4">
                             {% for row in items %}
                                 <div class="col-lg-3 col-md-6 mb-4">
-                                    <div class="card h-100">
+                                    <div class="card h-100" id="{{ row.title_id }}">
                                         <a href="#"><img class="card-img-top" src="{{ row.image_url }}" alt=""></a>
                                         <div class="card-body">
                                             <h4 class="card-title">
@@ -41,10 +41,11 @@
                                                 </span>
                                             {% endif %}
                                             {% if session['id'] %}
-                                                {% if row.title_id in session['decisions'] %}
+                                                {% if row.title_id in session['decisions'] or flag %}
                                                     <a href="javascript:void(0)" title="Remove from favorites">
                                                         <i class="empty-heart filled-heart"
                                                            data-id={{ session['id'] }} data-movie={{ row.title_id }}
+                                                                data-flag={{ flag }}
                                                            onclick=""></i>
                                                     </a>
                                                 {% else %}
@@ -55,7 +56,6 @@
                                                     </a>
                                                 {% endif %}
                                             {% endif %}
-
                                         </div>
                                     </div>
                                 </div>
