@@ -6,7 +6,7 @@ from web import app
 rec_page = Blueprint('recommendations', app.name)
 
 
-@rec_page.route('/<movie_id>', methods=['GET'])
+@rec_page.route('/<movie_id>')
 def recommendations(movie_id=None):
     """
     Recommendations page
@@ -15,13 +15,11 @@ def recommendations(movie_id=None):
         # movie features
         movie = rec.get_by_ids(movie_id)
         name = movie['original_title']
-        ratings = movie['episode_ratings']
-        flag = False if isnull(ratings) else True
 
         args = {
+            'header': 'Recommended movies for',
             'items': rec.recommend(movie_id),
-            'original': name,
-            'flag': flag
+            'original': name
         }
         return render_template('recommendations.html', **args)
     except BaseException:

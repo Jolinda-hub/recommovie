@@ -8,7 +8,7 @@
                     <div class="card-body">
                         <div class="row">
                             <div class="col-lg-12">
-                                <span class="page-header">Recommended movies for</span>
+                                <span class="page-header">{{ header }}</span>
                                 <span class="source-movie">{{ original }}</span>
                             </div>
                         </div>
@@ -16,7 +16,7 @@
                             {% for row in items %}
                                 <div class="col-lg-3 col-md-6 mb-4">
                                     <div class="card h-100">
-                                        <a href="#"><img class="card-img-top" src={{ row.image_url }} alt=""></a>
+                                        <a href="#"><img class="card-img-top" src="{{ row.image_url }}" alt=""></a>
                                         <div class="card-body">
                                             <h4 class="card-title">
                                                 <a href="/recommendations/{{ row.title_id }}">
@@ -28,25 +28,27 @@
                                         </div>
                                         <div class="card-footer">
                                             <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
-                                                <img class="imdb" src="/static/img/imdb.png">
+                                                <img class="imdb" src="/static/img/imdb.png" alt="imdb"
+                                                     title="Go to IMDB page">
                                             </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>
-                                            {% if flag %}
+                                            {% if row.title_type in [2, 3] %}
                                                 <span style="float: right; font-size:15px;">
-                                                    <a href="/infocard/{{ row.title_id }}" target="_blank">
+                                                    <a href="/infocard/{{ row.title_id }}" target="_blank"
+                                                       title="Go to infocard">
                                                         <i class="info"></i>
                                                     </a>
                                                 </span>
                                             {% endif %}
                                             {% if session['id'] %}
                                                 {% if row.title_id in session['decisions'] %}
-                                                    <a href="javascript:void(0)">
+                                                    <a href="javascript:void(0)" title="Remove from favorites">
                                                         <i class="empty-heart filled-heart"
                                                            data-id={{ session['id'] }} data-movie={{ row.title_id }}
                                                            onclick=""></i>
                                                     </a>
                                                 {% else %}
-                                                    <a href="javascript:void(0)">
+                                                    <a href="javascript:void(0)" title="Add to favorites">
                                                         <i class="empty-heart"
                                                            data-id={{ session['id'] }} data-movie={{ row.title_id }}
                                                            onclick=""></i>

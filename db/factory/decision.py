@@ -1,5 +1,5 @@
 from db import connect
-from db.model import Decision
+from db.model import Basic, Decision
 from sqlalchemy import and_
 
 
@@ -16,7 +16,8 @@ class DecisionFactory:
         session = connect()
 
         query = session \
-            .query(Decision) \
+            .query(Decision, Basic.title_type) \
+            .join(Basic, Decision.title_id == Basic.title_id) \
             .filter(Decision.user_id == user_id)
 
         try:

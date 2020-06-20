@@ -21,6 +21,16 @@ mapping = {
     'parentTconst': 'parent_id'
 }
 
+title_types = {
+    'movie': 1,
+    'tvSeries': 2,
+    'tvMiniSeries': 3,
+    'tvMovie': 4,
+    'short': 5,
+    'tvShort': 6,
+    'tvSpecial': 7
+}
+
 
 def edit(columns):
     """
@@ -63,13 +73,19 @@ def insert():
                 sep='\t',
                 quoting=3
         ):
+            # camel-case to snake-case
             chunk.columns = edit(chunk.columns)
 
             titles = ['video', 'videoGame', 'tvEpisode']
-            cond1 = ~chunk.title_type.isin(titles) \
-                if table == 'basics' else True
-            cond2 = ~chunk.title_id.isin(previous)
+            cond1 = True
 
+            # remove some title types
+            # title type mapping
+            if table == 'basics':
+                cond1 = ~chunk.title_type.isin(titles)
+                chunk['title_type'] = chunk['title_type'].replace(title_types)
+
+            cond2 = ~chunk.title_id.isin(previous)
             chunk = chunk[cond1 & cond2]
 
             if len(chunk) == 0:

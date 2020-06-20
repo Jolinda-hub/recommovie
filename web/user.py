@@ -174,3 +174,25 @@ def remove():
     session['decisions'] = decisions
 
     return jsonify({'status': True})
+
+
+@auth.route('/favorites')
+def get_favorites():
+    """
+    Get user favorites
+    """
+    df = DecisionFactory()
+
+    if not session['id']:
+        return redirect('/')
+
+    favorites = df.get_by_user(session['id'])
+    try:
+        args = {
+            'header': 'Favorites by',
+            'items': favorites,
+            'original': session['name']
+        }
+        return render_template('recommendations.html', **args)
+    except BaseException:
+        return render_template('error.html')

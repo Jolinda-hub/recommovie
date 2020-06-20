@@ -3,7 +3,6 @@ from scipy.signal import argrelextrema
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 from sklearn.neighbors.kde import KernelDensity
-from sklearn.preprocessing import LabelEncoder
 from util import get_params, set_logger
 import numpy as np
 import random
@@ -83,11 +82,6 @@ class Recommendation:
         """
         Data pre-processing
         """
-        le = LabelEncoder()
-
-        # str to int with label encoder
-        self.df.loc[:, 'title_type'] = le.fit_transform(self.df['title_type'])
-
         # drop null values
         cols = ['num_votes', 'runtime', 'start_year', 'title_type', 'genres']
         self.df = self.df.replace('', np.nan)

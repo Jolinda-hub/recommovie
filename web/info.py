@@ -5,7 +5,7 @@ from web import app
 info = Blueprint('infocard', app.name)
 
 
-@app.route('/infocard/<movie_id>', methods=['GET'])
+@app.route('/infocard/<movie_id>')
 def info_card(movie_id=None):
     """
     Get information card about series
