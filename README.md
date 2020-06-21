@@ -58,7 +58,7 @@ $ git clone https://github.com/egemenzeytinci/recommovie.git
     ```bash
     $  wget https://artifacts.elastic.co/downloads/elasticsearch/elasticsearch-7.1.1-darwin-x86_64.tar.gz
     $  tar -xf elasticsearch-7.1.1-darwin-x86_64.tar.gz
-    $  cd elasticsearch-7.1.1-darwin-x86_64.tar.gz
+    $  cd elasticsearch-7.1.1
     $  ./bin/elasticsearch
     ```
     

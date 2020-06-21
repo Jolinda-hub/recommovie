@@ -110,3 +110,6 @@ ENV/
 *.csv
 *.tsv
 *.gz
+
+# local config
+config/
