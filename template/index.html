@@ -51,9 +51,17 @@
                                         </div>
                                         <div class="card-footer">
                                             <a class="image-url" href="https://www.imdb.com/title/{{ row.title_id }}/">
-                                                <img class="imdb" src="/static/img/imdb.png">
+                                                <img class="imdb" src="/static/img/imdb.png" alt="imdb">
                                             </a>
                                             <span class="ml-1">{{ row.average_rating }}</span>
+                                            {% if row.title_type in [2, 3] %}
+                                                <span style="float: right; font-size:15px;">
+                                                    <a href="/infocard/{{ row.title_id }}" target="_blank"
+                                                       title="Go to infocard">
+                                                        <i class="info"></i>
+                                                    </a>
+                                                </span>
+                                            {% endif %}
                                             {% if session['id'] %}
                                                 {% if row.title_id in session['decisions'] %}
                                                     <a href="javascript:void(0)">
