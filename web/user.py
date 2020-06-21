@@ -62,6 +62,10 @@ def get_login():
     """
     Get login page
     """
+    # if user is already logged
+    if session['id']:
+        return redirect('/')
+
     params = {
         'title': 'Sign in',
     }
@@ -74,6 +78,10 @@ def post_login():
     """
     Post login page
     """
+    # if user is already logged
+    if session['id']:
+        return redirect('/')
+
     form = LoginForm()
     uf = UserFactory()
     df = DecisionFactory()
@@ -181,12 +189,12 @@ def get_favorites():
     """
     Get user favorites
     """
-    df = DecisionFactory()
-
     if not session['id']:
         return redirect('/')
 
+    df = DecisionFactory()
     favorites = df.get_by_user(session['id'])
+
     try:
         args = {
             'header': 'Favorites by',
