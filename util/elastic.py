@@ -132,7 +132,7 @@ class Elastic:
                 body=request_body
             )
         except exceptions.RequestError as e:
-            if not e.args[1] == 'resource_already_exists_exception':
+            if e.args[1] == 'resource_already_exists_exception':
                 logger.warn('Index already exists')
                 return
 
