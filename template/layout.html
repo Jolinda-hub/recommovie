@@ -14,6 +14,7 @@
     <link href="/static/css/shop-homepage.css" rel="stylesheet"/>
     <link href="/static/css/typeahead.css" rel="stylesheet"/>
     <link href="/static/css/base.css?v=5" rel="stylesheet"/>
+    <link href="/static/css/cookie.css" rel="stylesheet"/>
     <link href="https://fonts.googleapis.com/css?family=Montserrat:300,700" rel="stylesheet">
 
     {% block style %}{% endblock %}
@@ -23,11 +24,29 @@
 {% block navbar %}{% endblock %}
 {% block content %}{% endblock %}
 
+<div id="cookieConsent">
+    <div id="closeCookieConsent">x</div>
+    We use cookies on our website to enhance your user experience, if you agree to this and if you continue to use
+    our website, your personal data collected by the cookies is going to be utilized according to the aims and
+    methods specified in the <a href="/policy/privacy_policy" target="_blank">Privacy Policy</a> and the
+    <a href="/policy/cookie_policy" target="_blank">Cookie Policy</a> and in accordance with the legislation.
+</div>
+
 <script src="/static/js/jquery-1.9.1.js"></script>
 <script src="/static/js/jquery-ui.js"></script>
 <script src="/static/js/bootstrap.bundle.min.js"></script>
 <script src="/static/js/typeahead.min.js"></script>
 <script src="/static/js/bloodhound.min.js"></script>
 <script src="/static/js/chart.min.js"></script>
+<script>
+    $(document).ready(function () {
+        setTimeout(function () {
+            $('#cookieConsent').fadeIn(200);
+        }, 4000);
+        $('#closeCookieConsent').click(function () {
+            $('#cookieConsent').fadeOut(200);
+        });
+    });
+</script>
 {% block script %}{% endblock %}
 </body>

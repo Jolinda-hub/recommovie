@@ -253,3 +253,8 @@ td {
     background-size: 100% 100%;
     margin-left: 5px;
 }
+
+.modal-image {
+    width: 100%;
+    height: 100%;
+}

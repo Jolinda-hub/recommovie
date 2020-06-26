@@ -87,4 +87,54 @@
             </div>
         </div>
     </div>
+    <div class="modal fade right" id="modalFeature">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <p>Login now for
+                        <strong>using new feature!</strong>
+                    </p>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <div class="row">
+                        <div class="col-6">
+                            <img src="/static/img/feature.png" alt="new feature" class="modal-image">
+                        </div>
+
+                        <div class="col-6">
+                            <p>
+                                Hey! We have a new feature for you!
+                            </p>
+                            <p>
+                                Right now, you can sign up to Recommovie and add your favorite movies to the list.
+                                Then, if you want, we will send recommended movies for you.
+                            </p>
+                            <p>
+                                What are you still waiting for? <strong>Sign up</strong> and <strong>login</strong> now!
+                            </p>
+                        </div>
+                    </div>
+                </div>
+                <div class="modal-footer">
+                    <a href="/user/login" class="btn btn-danger">
+                        Login now
+                    </a>
+                    <a type="button" class="btn btn-outline-danger" data-dismiss="modal">No, thanks</a>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}
+{% block script %}
+    <script>
+        $(document).ready(function () {
+            if (Cookies.get('modalShown') == null) {
+                Cookies.set('modalShown', 'yes', {expires: 7, path: '/'});
+                $('#modalFeature').modal('show');
+            }
+        });
+    </script>
 {% endblock %}

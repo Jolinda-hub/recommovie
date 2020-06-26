@@ -18,3 +18,11 @@ def privacy_policy():
     Privacy policy
     """
     return render_template('privacy_policy.html')
+
+
+@policy.route('/cookie_policy')
+def cookie_policy():
+    """
+    Cookie policy
+    """
+    return render_template('cookie_policy.html')
