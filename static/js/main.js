@@ -17,7 +17,7 @@ var tags = new Bloodhound({
 });
 
 
-$("#selector").typeahead({
+$('#selector').typeahead({
         hint: true,
         highlight: true,
         minLength: 1
