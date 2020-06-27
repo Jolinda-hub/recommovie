@@ -43,7 +43,10 @@
 <script>
     $(document).ready(function () {
         setTimeout(function () {
-            $('#cookieConsent').fadeIn(200);
+            if (Cookies.get('cookieModal') == null) {
+                Cookies.set('cookieModal', 'yes', {expires: 7, path: '/'});
+                $('#cookieConsent').fadeIn(200);
+            }
         }, 4000);
         $('#closeCookieConsent').click(function () {
             $('#cookieConsent').fadeOut(200);

@@ -131,10 +131,12 @@
 {% block script %}
     <script>
         $(document).ready(function () {
-            if (Cookies.get('modalShown') == null) {
-                Cookies.set('modalShown', 'yes', {expires: 7, path: '/'});
-                $('#modalFeature').modal('show');
-            }
+            setTimeout(function () {
+                if (Cookies.get('modalShown') == null) {
+                    Cookies.set('modalShown', 'yes', {expires: 7, path: '/'});
+                    $('#modalFeature').modal('show');
+                }
+            }, 2000)
         });
     </script>
 {% endblock %}
